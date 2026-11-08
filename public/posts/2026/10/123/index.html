@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>【永久免费】纯净家宽住宅IP重大升级！edgetunnel 内置自动优选API，告别手动优选，v2rayN/Clash/sing-box全平台秒连！ · 晓鹤的博客</title>
+<meta name="description" content=" 
+
+     
+       
+
+     
+   
+     代码下载与项目地址 
+     
+        GitHub 仓库开源地址  
+          网盘下载地址一    
+         网盘下载  地址  二   
+">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">【永久免费】纯净家宽住宅IP重大升级！edgetunnel 内置自动优选API，告别手动优选，v2rayN/Clash/sing-box全平台秒连！</h1>
+  <div class="meta"><time>2026-10-10</time></div>
+  <div class="content"><div style="line-height: 1.7; max-width: 100%; overflow-wrap: break-word; word-wrap: break-word;">
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #2d3748;"><!--封面图占位区--></span>
+  <div class="separator" style="clear: both; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; text-align: center;"><a href="assets/img/8e715fd54823.jpg" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1536" data-original-width="2752" height="358" src="assets/img/8e715fd54823.jpg" width="640" /></a></div>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #2d3748;"><!--代码下载区域--></span>
+  <div style="background: linear-gradient(135deg, rgb(235, 248, 255) 0%, rgb(230, 255, 250) 100%); border-radius: 8px; border: 1px solid rgb(178, 245, 234); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-bottom: 28px; padding: 20px;">
+    <h3 style="color: #234e52; font-size: 18px; margin-bottom: 12px; margin-top: 0px;">代码下载与项目地址</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+      <a href="https://github.com/hezhanleiok/gate" rel="noopener noreferrer" style="background-color: #24292e; border-radius: 6px; color: white; display: inline-block; font-weight: 500; padding: 10px 18px; text-decoration: none;" target="_blank"><span style="color: white; font-size: 14px;">GitHub 仓库开源地址</span></a>
+      <span><span style="background-color: #319795; border-radius: 6px; display: inline-block; padding: 10px 18px; text-decoration-color: initial; text-decoration-style: initial; text-decoration-thickness: initial;"><a href="https://pan.xunlei.com/s/VP3_Afb4om0fVlTg-leNF7YqA1?pwd=82w8#"><span style="color: white; font-size: medium;">网盘下载地址一</span></a></span></span>
+      <a href="https://pan.quark.cn/s/10cad0efe7b8" rel="noopener noreferrer" style="background-color: #2b6cb0; border-radius: 6px; display: inline-block; font-weight: 500; padding: 10px 18px; text-decoration: none;" target="_blank"><span style="color: white;"><span style="font-size: 14px;">网盘下载</span><span style="font-size: medium;">地址</span><span style="font-size: 14px;">二</span></span></a>
+    </div>
+  </div>
+
+  <h2 style="border-bottom: 2px solid rgb(49, 130, 206); color: #1a202c; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; padding-bottom: 8px;">Fork 后必须修改的 3 处配置（精确行号指南）</h2>
+  <p style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;">Fork 本项目后，打开 <code>vpngate.py</code>[cite: 1]，定位到以下具体行进行修改：</p>
+
+  <div style="background-color: #f7fafc; border-left: 4px solid rgb(49, 130, 206); border-radius: 4px; color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin: 16px 0px; padding: 16px;">
+    <h3 style="color: #2b6cb0; margin-top: 0px;">1. 修改静态优选域名（第 84-90行附近）</h3>
+    <p>找到变量 <code>EDGE_HOSTS</code>，替换为你自己测速得到的可用优选域名或 IP（每个地址须带端口，逗号分隔）：</p>
+    <pre style="background: rgb(237, 242, 247); border-radius: 6px; font-size: 13px; overflow-x: auto; padding: 12px;"><code># 修改第 84 行附近
+EDGE_HOSTS = [
+    h.strip()
+    for h in os.environ.get(
+        "EDGE_HOSTS",
+        "saas.sin.fan:443,cdn.204910.best:443,cf.877774.xyz:443",
+    ).split(",")
+    if h.strip()
+]</code></pre>
+  </div>
+
+  <div style="background-color: #f7fafc; border-left: 4px solid rgb(49, 130, 206); border-radius: 4px; margin: 16px 0px; padding: 16px;">
+    <h3 style="color: #2b6cb0; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-top: 0px;">2. 修改优选 API（第 96 行）</h3>
+    <p style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;">找到变量 <code>OPTIMAL_API</code>，将其替换为你自己的优选测速接口地址（支持多个，英文逗号分隔）：<br /></p><p><span face="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" style="color: #2d3748;">电信线路：https://cf.090227.xyz/ct?ips=6&amp;port=443</span>[cite: 2, 3]</p><p><span face="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" style="color: #2d3748;">联通线路：https://cf.090227.xyz/cu?port=443</span>[cite: 3]</p><p><span face="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif" style="color: #2d3748;">移动线路：https://cf.090227.xyz/cmcc?ips=8&amp;port=443</span>[cite: 3]</p>
+    <pre style="background: rgb(237, 242, 247); border-radius: 6px; color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 13px; overflow-x: auto; padding: 12px;"><code># 修改第 96 行
+OPTIMAL_API = os.environ.get("OPTIMAL_API", "https://cf.090227.xyz/ct?ips=6&amp;port=443")<br /></code></pre>
+  </div>
+
+  <div style="background-color: #f7fafc; border-left: 4px solid rgb(49, 130, 206); border-radius: 4px; color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin: 16px 0px; padding: 16px;">
+    <h3 style="color: #2b6cb0; margin-top: 0px;">3. 修改仓库用户名（第 98行）</h3>
+    <p>找到变量 <code>NODES_URL</code>，将 <code>YOUR_GITHUB_USERNAME</code> 替换为你自己的 <strong>GitHub 用户名</strong>，确保生成的节点地址正确：</p>
+    <pre style="background: rgb(237, 242, 247); border-radius: 6px; font-size: 13px; overflow-x: auto; padding: 12px;"><code># 修改第 98 行
+NODES_URL = os.environ.get("NODES_URL", "https://你的GitHub用户名.github.io/gate/nodes.txt")</code></pre>
+  </div>
+
+  <h2 style="border-bottom: 2px solid rgb(49, 130, 206); color: #1a202c; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-top: 32px; padding-bottom: 8px;">使用方法</h2>
+  <ol style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; padding-left: 20px;">
+    <li style="margin-bottom: 8px;">在仓库的 <strong>Settings -&gt; Pages</strong> 中，将分支来源设置为 <code>gh-pages</code> 或工作流自动发布的目录[cite: 1]。</li>
+    <li style="margin-bottom: 8px;">进入 <strong>Actions</strong> 页面手动触发一次 <code>Check &amp; Update</code> 流水线[cite: 1]。</li>
+    <li style="margin-bottom: 8px;">运行成功后，访问 <code>https://你的用户名.github.io/你的仓库名/nodes.txt</code> 检查是否输出节点行[cite: 1]。</li>
+    <li style="margin-bottom: 8px;">将该 <code>nodes.txt</code> 地址填入 edgetunnel 后台的<strong>「自定义优选IP」</strong>输入框中保存即可。</li>
+  </ol>
+
+  <h2 style="border-bottom: 2px solid rgb(49, 130, 206); color: #1a202c; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-top: 32px; padding-bottom: 8px;">常见问题解答 (FAQ)</h2>
+
+  <div style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-bottom: 20px;">
+    <h4 style="color: #2c5282; margin-bottom: 6px;">Q1: 运行后提示“获取原始节点 -1”或“节点数为 0”？</h4>
+    <p style="margin: 0px;">
+      <strong>原因：</strong>&nbsp;获取的节点全部是-1,检查更新节点是否能更新，更新不出来就是edge问题，查看邮件看cloudflare的邮件是每日10万请求用完还是被检测滥用了，请求用完第二天 自动回复，检测到滥用，删除项目，重新部署，如果以上都没有还是-1，建议更换优选域名或优选API尝试</p>
+  </div>
+
+  <div style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-bottom: 20px;">
+    <h4 style="color: #2c5282; margin-bottom: 6px;">Q2: 定时更新频率多久最安全，不容易触发风控？</h4>
+    <p style="margin: 0px;">
+      <strong>推荐频率：每 1 到 2 小时运行一次（cron: <code>0 */2 * * *</code>）。</strong><br />
+      低于 30 分钟过于频繁，容易触发两层限制：一是 VPN Gate 针对单一 IP 抓取的反爬频率限制；二是 GitHub Actions 免费账户每月的构建时长额度（2000 分钟/月）可能会提前耗尽。
+    </p>
+  </div>
+
+  <div style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin-bottom: 20px;">
+    <h4 style="color: #2c5282; margin-bottom: 6px;">Q3: 为什么必须用 GitHub Actions，不能只用 Cloudflare 部署吗？</h4>
+    <p style="margin: 0px;">
+      <strong>核心限制是免费版 Cloudflare Workers 无法支撑重度并发与长耗时任务：</strong>
+    </p>
+    <ul style="margin-top: 6px; padding-left: 20px;">
+      <li><strong>CPU 运行时间限制：</strong> 免费版 Worker 单次请求的 CPU 运行时间上限仅 10ms-50ms，无法在单次请求中完成几十个上百个节点的大规模并发探测与解包。</li>
+      <li><strong>出站连接并发与长连接限制：</strong> 批量请求外部检测 Worker 及多个数据源时，Worker 会受到子请求总数与总耗时的严格限制。</li>
+      <li><strong>静态文件托管：</strong> GitHub Actions 配合 Pages[cite: 1] 本质上扮演了「免费定时计算服务器」+「静态分发 CDN」的角色，性价比与稳定性远高于单一免费 Worker。</li>
+    </ul>
+  </div>
+
+</div></div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>彻底告别手动！Cloudflare + GitHub 24小时全自动更新住宅IP，一键订阅日韩纯净节点（附避坑指南） · 晓鹤的博客</title>
+<meta name="description" content=" 
+
+       
+
+   本教程基于最新精简版代码，全程通过网页操作，不需要在电脑上安装任何软件，也不需要敲命令。你只需要有 Cloudflare 账号和 GitHub 账号，按步骤点一点就能完成部署。 
+
+   
+     📌 你需要">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">彻底告别手动！Cloudflare + GitHub 24小时全自动更新住宅IP，一键订阅日韩纯净节点（附避坑指南）</h1>
+  <div class="meta"><time>2026-10-06</time><a class="tag" href="/tags/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/">技术教程</a></div>
+  <div class="content"><div style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; line-height: 1.7; margin: 0px auto; max-width: 860px; padding: 10px;">
+
+  <div class="separator" style="clear: both; text-align: center;"><a href="assets/img/c06362a7b23a.jpg" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1536" data-original-width="2752" src="assets/img/c06362a7b23a.jpg" /></a></div>
+
+  <p style="color: #333333; margin-bottom: 20px;">本教程基于最新精简版代码，全程通过网页操作，不需要在电脑上安装任何软件，也不需要敲命令。你只需要有 Cloudflare 账号和 GitHub 账号，按步骤点一点就能完成部署。</p>
+
+  <div style="background-color: #e8f4fd; border-left: 5px solid rgb(52, 152, 219); border-radius: 6px; color: #333333; margin: 20px 0px; padding: 15px;">
+    <strong>📌 你需要准备的：</strong>
+    <ul style="margin: 10px 0px 0px; padding-left: 20px;">
+      <li>一个 Cloudflare 账号（<a href="https://dash.cloudflare.com/sign-up" style="color: #3498db;" target="_blank">免费注册</a>）</li>
+      <li>一个 GitHub 账号（<a href="https://github.com/signup" style="color: #3498db;" target="_blank">免费注册</a>）</li>
+    </ul>
+  </div>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第一步：部署检测 Worker（CheckSocks5）</h3>
+  <p style="color: #333333;">检测 Worker 负责验证 SSTP 节点能不能用，必须自己部署一个。全程在网页上完成。</p>
+
+  <p style="color: #333333;"><strong>1. 打开 Worker 源码仓库：</strong><br />
+  <a href="https://github.com/lsh8848/cm-Workers-CheckSocks5" style="color: #3498db; word-break: break-all;" target="_blank">https://github.com/lsh8848/cm-Workers-CheckSocks5</a></p>
+
+  <p style="color: #333333;"><strong>2. 点击右上角 Fork，把仓库复制到你的 GitHub 账号下。</strong></p>
+
+  <p style="color: #333333;"><strong>3. 进入 Cloudflare 控制台：</strong><br />
+  <a href="https://dash.cloudflare.com/" style="color: #3498db;" target="_blank">https://dash.cloudflare.com/</a><br />
+  登录后，点击左侧菜单的 <strong>Workers 和 Pages</strong>。</p>
+
+  <p style="color: #333333;"><strong>4. 点击“创建” → 选择“创建 Worker”。</strong><br />
+  给 Worker 起个名字，比如 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">check-sstp</code>，然后点击<strong>部署</strong>。</p>
+
+  <p style="color: #333333;"><strong>5. 部署完成后，点击“编辑代码”。</strong><br />
+  把编辑器里默认的代码全部删掉，然后打开你 Fork 的仓库，找到 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">_worker.js</code> 文件，复制全部内容，粘贴到 Cloudflare 编辑器里。</p>
+
+  <p style="color: #333333;"><strong>6. 点击右上角“保存并部署”。</strong></p>
+
+  <p style="color: #333333;"><strong>7. 部署完成后，你会得到一个 Worker 域名，格式类似：</strong><br />
+  <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">https://check-sstp.你的用户名.workers.dev</code><br />
+  <span style="color: #e74c3c; font-weight: bold;">把这个域名记下来，后面第五步要用，每个人部署的域名都不一样。</span></p>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid rgb(255, 193, 7); border-radius: 6px; color: #333333; margin: 20px 0px; padding: 15px;">
+    <strong>⚠️ 提示：</strong>如果部署后访问 Worker 域名能看到检测页面，说明部署成功。这个 Worker 没有内置密码，建议自己用的时候不要公开分享。
+  </div>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第二步：部署 edgetunnel（核心使用端，获取 UUID 和域名）</h3>
+  <p style="color: #333333;">edgetunnel 是 VLESS 代理 + 链式代理工具，你的节点最终通过它来使用。<strong>注意：UUID 和节点域名是在这一步配置和获取的，不需要写在 vpngate.py 里！</strong></p>
+
+  <p style="color: #333333;"><strong>1. 打开 edgetunnel 源码仓库：</strong><br />
+  <a href="https://github.com/cmliu/edgetunnel" style="color: #3498db; word-break: break-all;" target="_blank">https://github.com/cmliu/edgetunnel</a></p>
+
+  <p style="color: #333333;"><strong>2. 在 Cloudflare 控制台再创建一个新的 Worker。</strong><br />
+  名字随便起，比如 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">edgetunnel</code>，点击<strong>部署</strong>。</p>
+
+  <p style="color: #333333;"><strong>3. 进入“编辑代码”，把默认代码全部删掉。</strong><br />
+  打开 edgetunnel 仓库的 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">_worker.js</code> 文件：<br />
+  <a href="https://github.com/cmliu/edgetunnel/blob/main/_worker.js" style="color: #3498db; word-break: break-all;" target="_blank">https://github.com/cmliu/edgetunnel/blob/main/_worker.js</a><br />
+  复制全部内容，粘贴到 Cloudflare 编辑器，然后点击<strong>保存并部署</strong>。</p>
+
+  <p style="color: #333333;"><strong>4. 在 Worker 的“设置”选项卡中，添加环境变量。</strong><br />
+  找到 <strong>变量</strong> → <strong>添加变量</strong>：<br />
+  - 变量名称：<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">ADMIN</code><br />
+  - 值：你的管理员密码（自己设一个）<br />
+  点击<strong>保存</strong>。</p>
+
+  <p style="color: #333333;"><strong>5. 绑定 KV 命名空间。</strong><br />
+  在 <strong>绑定</strong> 选项卡中选择 <strong>添加绑定 +</strong> → <strong>KV 命名空间</strong> → <strong>添加绑定</strong>：<br />
+  - 变量名称：<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">KV</code><br />
+  - 选择一个已有的命名空间或创建一个新的<br />
+  点击<strong>添加绑定</strong>。</p>
+
+  <p style="color: #333333;"><strong>6. 绑定自定义域（可选，推荐）。</strong><br />
+  在 Worker 的 <strong>触发器</strong> 选项卡，点击 <strong>添加自定义域</strong>，填入你已转入 CF 的域名，例如 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">vless.你的域名.com</code>，等待证书生效。</p>
+
+  <p style="color: #333333;"><strong>7. 访问你的域名 /admin，输入管理员密码登录后台。</strong><br />
+  在后台首页记下你的 <strong>UUID</strong> 和 <strong>节点域名</strong>，后面要用。</p>
+
+  <div style="background-color: #e8f4fd; border-left: 5px solid rgb(52, 152, 219); border-radius: 6px; color: #333333; margin: 20px 0px; padding: 15px;">
+    <strong>💡 说明：</strong>edgetunnel 后台的“自定义优选IP”框后面会用到，用来填我们生成的 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">nodes.txt</code> 地址。
+  </div>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第三步：Fork 本项目仓库</h3>
+
+  <p><strong><span style="color: #333333;">小白可以下载此代码，工作流自动更新分24小时和2小时自动更新</span><br /><span style="color: #333333;">下载地址一：</span><span style="color: red;">【<a href="https://pan.xunlei.com/s/VP3H9FGls-UbYc0tt_kLRNmsA1?pwd=gkds#" target="_blank">点此跳转</a>】</span><br /><span style="color: #333333;">下载地址二：</span><span style="color: red;">【<a href="https://pan.quark.cn/s/103a61a9469a" target="_blank">点此跳转</a>】</span></strong></p><p style="color: #333333;"><strong>1. 打开项目仓库：</strong><br />
+  <a href="https://github.com/hezhanleiok/gate" style="color: #3498db; word-break: break-all;" target="_blank">https://github.com/hezhanleiok/gate</a></p>
+
+  <p style="color: #333333;"><strong>2. 点击右上角 Fork，把整个仓库复制到你的 GitHub 账号下。</strong></p>
+
+  <p style="color: #333333;"><strong>3. 进入你 Fork 后的仓库，确认根目录有这些文件：</strong><br />
+  - <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">vpngate.py</code>（Python 主脚本）<br />
+  - <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">requirements.txt</code>（依赖文件，内容应为 <code>requests</code>）<br />
+  - <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">.github/workflows/vpngate.yml</code>（工作流文件）</p>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第四步：修改 vpngate.py 文件（一处）</h3>
+
+  <p style="color: #333333;">在仓库中打开 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">vpngate.py</code>，点击右上角铅笔图标进入编辑模式。<strong>你只需要修改一处：</strong></p>
+
+  <p style="color: #333333;"><strong>搜索 `NODES_URL`（大约在代码第 307 行）：</strong></p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); color: #333333; font-size: 13px; overflow-x: auto; padding: 12px;"><code>NODES_URL = os.environ.get("NODES_URL", "https://YOUR_GITHUB_USERNAME.github.io/gate/nodes.txt")</code></pre>
+  <p style="color: #333333;">把 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">YOUR_GITHUB_USERNAME</code> 换成你自己的 GitHub 用户名，例如：</p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); color: #333333; font-size: 13px; overflow-x: auto; padding: 12px;"><code>NODES_URL = os.environ.get("NODES_URL", "https://hezhanleiok.github.io/gate/nodes.txt")</code></pre>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid rgb(255, 193, 7); border-radius: 6px; color: #333333; margin: 20px 0px; padding: 15px;">
+    <strong>⚠️ 重要说明：</strong>精简版 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">vpngate.py</code> 中<strong>没有</strong> <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">EDT_UUID</code> 和 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">EDT_DOMAIN</code> 这两个变量。因为这两个参数属于 edgetunnel 本身，在第二步你已经配置好了。你只需要把 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">nodes.txt</code> 的 URL 填入 edgetunnel 后台，edgetunnel 会自动用它的 UUID 和域名去生成能用的节点，你完全不用担心无法使用！
+  </div>
+
+  <p style="color: #333333;">修改完成后，点击页面底部的 <strong>Commit changes</strong> 保存。</p>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第五步：配置 Secret 密钥与修改工作流文件</h3>
+
+  <p style="color: #333333;">为了防止你的检测 Worker 域名公开后被其他人盗用刷爆额度，我们将检测域名保存在 GitHub Secrets（隐藏密钥）中，让工作流自动读取。</p>
+
+  <p style="color: #333333;"><strong>1. 添加 GitHub Secret（配置隐藏变量）</strong></p>
+  <ul style="color: #333333; padding-left: 20px;">
+    <li>进入你 Fork 后的仓库，点击顶部菜单的 <strong>Settings</strong>（设置）。</li>
+    <li>在左侧边栏依次点击 <strong>Secrets and variables</strong> → <strong>Actions</strong>。</li>
+    <li>点击右上角的绿色按钮 <strong>New repository secret</strong>：
+      <ul style="margin-top: 5px;">
+        <li><strong>Name（名称）：</strong>填入 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">DOMAIN</code></li>
+        <li><strong>Secret（内容）：</strong>填入你在第一步得到的完整检测 Worker 链接（例如：<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">https://check-sstp.你的用户名.workers.dev/check?sstp=vpn:vpn@</code>）</li>
+      </ul>
+    </li>
+    <li>点击 <strong>Add secret</strong> 保存。</li>
+  </ul>
+
+  <p style="color: #333333;"><strong>2. 修改工作流文件（<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">.github/workflows/vpngate.yml</code>）</strong></p>
+  <p style="color: #333333;">在仓库中打开 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">.github/workflows/vpngate.yml</code>，点击右侧铅笔图标进入编辑模式。</p>
+
+  <p style="color: #333333;"><strong>第 1 处【必改项 - 核心密钥】：</strong></p>
+  <p style="color: #333333;">找到 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">CHECK_WORKER:</code> 大概在35行，修改为调用刚添加的 Secret：</p>
+  <p style="color: #333333;">修改前（明文暴露域名）：</p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); color: #333333; font-size: 13px; overflow-x: auto; padding: 12px;"><code>CHECK_WORKER: "https://你的域名/check?sstp=vpn:vpn@"</code></pre>
+  <p style="color: #333333;">修改后（通过 Secret 安全读取）：</p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); color: #333333; font-size: 13px; overflow-x: auto; padding: 12px;"><code>CHECK_WORKER: ${{ secrets.DOMAIN }}</code></pre>
+
+  <p style="color: #333333;"><strong>第 2 处【可选项 - 日志站点展示】：</strong></p><p style="color: #333333;">这一步的作用仅仅是在 GitHub Actions 运行完成后的控制台日志尾部打印一行提示信息，<strong>改不改完全不影响脚本和节点的自动化抓取运行</strong>。如果你希望日志里显示的 URL 对应你自己的 GitHub 账号，大概再71行，可以顺手修改：</p></div><div style="color: #333333; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; line-height: 1.7; margin: 0px auto; max-width: 860px; padding: 10px;">
+  <p>修改前：</p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); font-size: 13px; overflow-x: auto; padding: 12px;"><code>- name: Show site URL
+  run: 'echo "site: https://仓库用户名.github.io/gate/ ..."'</code></pre>
+  <p>修改后：</p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); font-size: 13px; overflow-x: auto; padding: 12px;"><code>- name: Show site URL
+  run: 'echo "site: https://你的GitHub用户名.github.io/gate/ ..."'</code></pre>
+
+  <p>修改完成后，点击页面右上角的 <strong>Commit changes</strong> 保存。</p>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第六步：启用 GitHub Pages</h3>
+
+  <p><strong>1. 进入你的仓库 → Settings → Pages。</strong></p>
+
+  <p><strong>2. 在 Build and deployment 下：</strong></p>
+  <ul style="padding-left: 20px;">
+    <li><strong>Source</strong> 选择 <strong>GitHub Actions</strong></li>
+    <li>目录选择 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">/public</code>（如果工作流中指定了路径）</li>
+  </ul>
+
+  <p><strong>3. 保存后，等待第一次工作流运行完成，你的页面就会发布在：</strong><br />
+  <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">https://你的GitHub用户名.github.io/gate/</code></p>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第七步：运行自动化流程</h3>
+
+  <p><strong>手动运行（推荐首次使用）：</strong></p>
+  <ol style="padding-left: 20px;">
+    <li>进入你的仓库 → <strong>Actions</strong> 标签页。</li>
+    <li>左侧选择 <strong>VPN Gate Node Check</strong> 工作流。</li>
+    <li>点击右侧 <strong>Run workflow</strong> → <strong>Run workflow</strong>，即可手动触发一次检测和部署。</li>
+  </ol>
+
+  <p><strong>自动运行（可选）：</strong></p>
+  <p>如果你希望 GitHub 自动定时更新，需要在工作流文件中修改 <code>on:</code> 下方的 <code>cron</code> 表达式。下面我为你列出了几种常见的时间间隔：</p>
+
+  <table style="border-collapse: collapse; font-size: 14px; margin: 20px 0px; width: 100%;">
+    <thead>
+      <tr style="background-color: #f8f9fa;">
+        <th style="border: 1px solid rgb(221, 221, 221); padding: 10px; text-align: left;">运行频率</th>
+        <th style="border: 1px solid rgb(221, 221, 221); padding: 10px; text-align: left;">cron 表达式</th>
+        <th style="border: 1px solid rgb(221, 221, 221); padding: 10px; text-align: left;">小白说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><strong>每 30 分钟</strong></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>*/30 * * * *</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">每小时的 0 分和 30 分各跑一次</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><strong>每 60 分钟（1 小时）</strong></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>0 * * * *</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">每小时的 0 分跑一次</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><strong>每 4 小时</strong></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>0 */4 * * *</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">每 4 小时跑一次（0点、4点、8点...）</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><strong>每 12 小时</strong></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>0 */12 * * *</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">每 12 小时跑一次（0点和12点）</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><strong>每 24 小时（每天一次）</strong></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>0 0 * * *</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">每天 0 点（午夜）跑一次</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>完整的工作流定时写法如下（这里以 <strong>每 60 分钟</strong> 为例，你只要把 <code>cron</code> 后面的内容替换成表格里你想要的即可）：</p>
+  <pre style="background: rgb(248, 249, 250); border-radius: 6px; border: 1px solid rgb(221, 221, 221); font-size: 13px; overflow-x: auto; padding: 12px;"><code>on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:</code></pre>
+  <p>保存后，GitHub 就会按照你设置的时间自动运行工作流了。</p>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第八步：验证部署结果</h3>
+
+  <p>工作流运行完成后，访问你的 GitHub Pages 地址，应该能看到节点列表页面。</p>
+
+  <p>同时，仓库的 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">public/</code> 目录下会生成 3 个文件：</p>
+
+  <table style="border-collapse: collapse; font-size: 14px; margin: 20px 0px; width: 100%;">
+    <thead>
+      <tr style="background-color: #f8f9fa;">
+        <th style="border: 1px solid rgb(221, 221, 221); padding: 10px; text-align: left;">文件</th>
+        <th style="border: 1px solid rgb(221, 221, 221); padding: 10px; text-align: left;">用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>data.json</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">节点检测结果的原始数据</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>index.html</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;">展示页面（GitHub Pages 的首页）</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><code>nodes.txt</code></td>
+        <td style="border: 1px solid rgb(221, 221, 221); padding: 10px;"><strong>纯节点行，填 URL 自动轮换（最核心）</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">第九步：在 edgetunnel 后台配置自动轮换</h3>
+
+  <ol style="padding-left: 20px;">
+    <li>登录 edgetunnel 后台（<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">https://你的域名/admin</code>）。</li>
+    <li>找到 <strong>自定义优选IP</strong> 输入框。</li>
+    <li>填入你的 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">nodes.txt</code> 的网址：<br />
+    <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">https://你的GitHub用户名.github.io/gate/nodes.txt</code></li>
+    <li>保存。edgetunnel 每次生成订阅时会自动拉取这个文件，解析 <code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">$sstp://</code> 并套上链式代理。</li>
+    <li>在你的客户端（v2rayN、Clash 等）中订阅 edgetunnel 的订阅地址，即可使用自动轮换的 SSTP 节点。</li>
+  </ol>
+
+  <h3 style="color: #2c3e50; margin-top: 35px;">常见问题</h3>
+
+  <p><strong>Q：为什么 vpngate.py 里没有 UUID 和域名？会影响使用吗？</strong><br />
+  A：完全不会影响。UUID 和域名是 edgetunnel 自身的配置，你在第二步已经在 edgetunnel 后台设置好了。vpngate.py 只负责提供节点货源（nodes.txt），edgetunnel 会自动用它的 UUID 和域名对节点进行封装，最后输出给你客户端订阅的。所以这两项不需要写在 vpngate.py 里。</p>
+
+  <p><strong>Q：Worker 域名怎么找？</strong><br />
+  A：在 Cloudflare 控制台 → Workers 和 Pages → 点击你创建的 Worker → 右侧可以看到域名。</p>
+
+  <p><strong>Q：工作流运行失败怎么办？</strong><br />
+  A：进入 Actions 标签页，点击失败的那次运行，查看日志中的错误信息。常见原因：<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">CHECK_WORKER</code> 域名填错、<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">requirements.txt</code> 缺失、Python 文件名不对。</p>
+
+  <p><strong>Q：edgetunnel 的 UUID 和域名在哪里看？</strong><br />
+  A：登录 edgetunnel 后台（<code style="background: rgb(244, 244, 244); border-radius: 4px; padding: 2px 6px;">https://你的域名/admin</code>），在后台首页就能看到。</p>
+
+  <p><strong>Q：需要花钱吗？</strong><br />
+  A：不需要。Cloudflare Workers 免费版每天有 10 万次请求额度，GitHub Pages 和 GitHub Actions 对公开仓库完全免费。</p>
+
+  <div style="background-color: #d4edda; border-left: 5px solid rgb(40, 167, 69); border-radius: 6px; margin: 25px 0px; padding: 15px;">
+    <strong>🎉 恭喜！</strong>按以上步骤操作完成后，你就拥有了一套全自动的 VPN Gate SSTP 节点检测与分发系统，每 30 分钟自动更新，客户端订阅后自动轮换节点。
+  </div>
+
+</div></div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>

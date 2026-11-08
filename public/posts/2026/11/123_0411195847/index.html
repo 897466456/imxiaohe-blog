@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>彻底告别付费住宅IP！代码更新Cloudflare + GitHub 24小时全自动抓取原生家宽节点，秒解ChatGPT/TikTok封锁！#住宅IP #免费节点 #ChatGPT解封 · 晓鹤的博客</title>
+<meta name="description" content=" 
+ 
+
+         这套方案只用三样免费资源： 两个 Cloudflare Worker  +  一个 GitHub 仓库 。目标不是「从零搭一个代理」，而是把  VPN Gate 上的公共 SSTP 节点  自动筛成一份 能连通、">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">彻底告别付费住宅IP！代码更新Cloudflare + GitHub 24小时全自动抓取原生家宽节点，秒解ChatGPT/TikTok封锁！#住宅IP #免费节点 #ChatGPT解封</h1>
+  <div class="meta"><time>2026-11-06</time></div>
+  <div class="content"><!--▼▼▼ 从这里开始复制到 Blogger（正文视图请切到「HTML 视图」） ▼▼▼-->
+<div style="background: rgb(255, 255, 255); border-radius: 14px; box-shadow: rgba(15, 23, 42, 0.08) 0px 1px 4px; color: #1f2937; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, sans-serif; font-size: 16px; line-height: 1.78; margin: 0px auto; max-width: 860px; padding: 26px 26px 12px;">
+
+  <div class="separator" style="clear: both; text-align: center;"><a href="assets/img/2f1457429847.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1536" data-original-width="2752" height="358" src="assets/img/2f1457429847.jpg" width="640" /></a></div><br /><p style="background: rgb(248, 250, 252); border-left: 4px solid rgb(14, 165, 233); border-radius: 0px 10px 10px 0px; color: #334155; font-size: 17px; line-height: 1.8; margin: 6px 0px 16px; padding: 16px 20px;">这套方案只用三样免费资源：<strong>两个 Cloudflare Worker</strong> + <strong>一个 GitHub 仓库</strong>。目标不是「从零搭一个代理」，而是把 <strong>VPN Gate 上的公共 SSTP 节点</strong> 自动筛成一份<strong>能连通、可分类、会自己更新</strong>的订阅清单（<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">nodes.txt</code>），再交给 edgetunnel 生成最终订阅。全文从零开始，做完大约 10 分钟。</p>
+
+  <h2 id="toc" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 34px 0px 14px; padding: 0px 0px 10px;">目录</h2>
+  <ol style="color: #0369a1; font-size: 15px; line-height: 1.95; margin: 14px 0px 20px; padding-left: 24px;">
+    <li>先搞清楚：三个组件各管什么</li>
+    <li>前置准备</li>
+    <li><a href="#s1" style="color: #0369a1; text-decoration: none;">第 1 步：部署 edgetunnel（核心使用端）</a></li>
+    <li><a href="#s2" style="color: #0369a1; text-decoration: none;">第 2 步：部署检测 Worker（CheckSocks5）</a></li>
+    <li><a href="#s3" style="color: #0369a1; text-decoration: none;">第 3 步：Fork gate 仓库</a></li>
+    <li><a href="#s4" style="color: #0369a1; text-decoration: none;">第 4 步：设置 Secret <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-size: 13px; padding: 1px 5px;">DOMAIN</code></a></li>
+    <li><a href="#s5" style="color: #0369a1; text-decoration: none;">第 5 步：启用 GitHub Pages</a></li>
+    <li><a href="#s6" style="color: #0369a1; text-decoration: none;">第 6 步：运行工作流，生成 nodes.txt</a></li>
+    <li><a href="#s7" style="color: #0369a1; text-decoration: none;">第 7 步：把 nodes.txt 填进 edgetunnel</a></li>
+    <li><a href="#s8" style="color: #0369a1; text-decoration: none;">第 8 步（可选）：定时自动更新</a></li>
+    <li><a href="#s9" style="color: #0369a1; text-decoration: none;">部署完成验证清单</a></li>
+    <li><a href="#s10" style="color: #0369a1; text-decoration: none;">这次更新了什么</a></li>
+    <li><a href="#s11" style="color: #0369a1; text-decoration: none;">常见问题 FAQ</a></li>
+    <li><a href="#s12" style="color: #0369a1; text-decoration: none;">安全提醒与免费额度</a></li>
+    <li><a href="#s13" style="color: #0369a1; text-decoration: none;">附录：配置项速查与目录结构</a></li>
+  </ol>
+
+  <h2 id="s0" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">先搞清楚：三个组件各管什么</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">绝大多数踩坑都来自「把不同组件的配置填到了彼此身上」。先看这张分工表，后面每一步都会对应回来：</p>
+
+  <div style="margin: 18px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">组件</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">部署在哪</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">负责什么</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">你会拿到什么</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;"><strong>edgetunnel</strong></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">Cloudflare Worker</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">对外提供代理与订阅后台，最终订阅由它生成</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">ADMIN 密码、UUID、节点域名、/admin 后台</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;"><strong>CheckSocks5 检测 Worker</strong></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">Cloudflare Worker</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">接收一个 SSTP 地址，返回「通不通、延迟、出口国家、是否机房 IP」</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">形如 abc.用户名.workers.dev 的检测地址</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;"><strong>gate（本仓库）</strong></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">GitHub Actions + Pages</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">抓 VPN Gate 节点 → 调用检测 Worker 逐个验证 → 发布节点清单与面板</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">nodes.txt、data.json、在线面板</td></tr>
+    </tbody>
+  </table></div>
+
+  <div style="background: rgb(255, 251, 235); border-color: rgb(253, 230, 138) rgb(253, 230, 138) rgb(253, 230, 138) rgb(217, 119, 6); border-image: none; border-left: 4px solid #d97706; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(253, 230, 138); color: #78350f; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>全文只要记住三个凭据/地址：</strong>
+    <ul style="margin: 10px 0px 0px; padding-left: 22px;">
+      <li><strong>ADMIN</strong>：edgetunnel 后台登录密码，只在第 1 步设置。</li>
+      <li><strong>UUID / 节点域名</strong>：edgetunnel 自己的东西，只在 edgetunnel 后台看，<strong>永远不需要写进 gate</strong>。</li>
+      <li><strong>DOMAIN</strong>：第 2 步那个检测 Worker 的 <strong>host</strong>（不含 https:// 与路径），是 gate 唯一的必填配置。</li>
+    </ul>
+  </div>
+
+  <h2 style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">前置准备</h2>
+  <ul style="font-size: 16px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;">一个 <strong>GitHub 账号</strong>（免费即可，工作流跑在公开仓库上不消耗私有分钟数）。</li>
+    <li style="margin: 8px 0px;">一个 <strong>Cloudflare 账号</strong>（免费版足够：两个 Worker 的检测请求量远低于每日 10 万次上限）。</li>
+    <li style="margin: 8px 0px;"><strong>可选但推荐</strong>：一个已托管在 Cloudflare 的<strong>自定义域名</strong>。<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">*.workers.dev</code> 在部分地区无法直接访问，用自定义域名绑定的 Worker 更稳。</li>
+    <li style="margin: 8px 0px;">时间 20 分钟左右；全程不需要服务器、不需要花钱。</li>
+  </ul>
+
+  <hr style="border-color: rgb(229, 231, 235) currentcolor currentcolor; border-image: none; border-style: solid none none; border-top: 1px solid #e5e7eb; border-width: 1px 0px 0px; border: 0px; margin: 36px 0px;" />
+
+  <h2 id="s1" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 1 步</span>部署 edgetunnel（核心使用端）</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">edgetunnel 是你最终会「用到」的那个 Worker，先把它部署好，后面拿到 nodes.txt 才有地方填。</p>
+
+  <ol style="font-size: 16px; line-height: 1.85; margin: 16px 0px; padding-left: 24px;">
+    <li style="margin: 10px 0px;">登录 Cloudflare 控制台，点击左侧 <strong>Workers 和 Pages</strong>。</li>
+    <li style="margin: 10px 0px;">点击 <strong>创建</strong> → 选择 <strong>创建 Worker</strong>，起名 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">edgetunnel</code>，点击 <strong>部署</strong>。</li>
+    <li style="margin: 10px 0px;">打开 <a href="https://github.com/cmliu/edgetunnel/blob/main/_worker.js" style="color: #0369a1;">https://github.com/cmliu/edgetunnel/blob/main/_worker.js</a>，复制全部代码（建议点右上角 <strong>Raw</strong> 后 Ctrl+A 全选、Ctrl+C 复制，避免把行号一起复制进去）。</li>
+    <li style="margin: 10px 0px;">回到 Cloudflare Worker 编辑器，<strong>先把示例代码全部清空</strong>，粘贴代码，点击 <strong>保存并部署</strong>。</li>
+    <li style="margin: 10px 0px;">在 <strong>设置 → 变量</strong> 中，添加变量 <strong>ADMIN</strong>，值填你的管理员密码（建议顺手点「加密」，避免明文出现在控制台历史里）。</li>
+    <li style="margin: 10px 0px;">在 <strong>绑定</strong> 中，添加 KV 命名空间绑定，<strong>变量名称必须填 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">KV</code></strong>（大小写一致）。若还没有命名空间，就在 Workers 和 Pages → KV 命名空间 里新建一个，例如 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">edgetunnel-kv</code>。</li>
+    <li style="margin: 10px 0px;">（推荐）在 <strong>触发器</strong> 中绑定自定义域名，例如 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">tunnel.example.com</code>。绑好后优先用这个域名访问，不要只用 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">*.workers.dev</code>。</li>
+    <li style="margin: 10px 0px;">浏览器访问 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://你的域名/admin</code>，用第 5 条的 ADMIN 密码登录后台。</li>
+    <li style="margin: 10px 0px;">在后台首页记下你的 <strong>UUID</strong> 和 <strong>节点域名</strong>（后面要用）。</li>
+  </ol>
+
+  <div style="background: rgb(254, 242, 242); border-color: rgb(254, 202, 202) rgb(254, 202, 202) rgb(254, 202, 202) rgb(220, 38, 38); border-image: none; border-left: 4px solid #dc2626; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(254, 202, 202); color: #7f1d1d; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>关键：</strong>UUID 和节点域名是 edgetunnel <strong>自己的配置</strong>，<strong>不需要</strong>在 vpngate.py 中设置，也不需要填进 GitHub Secrets。gate 只负责生成 nodes.txt（一份「入口 + 备注」清单），最终订阅由 edgetunnel 用它自己的 UUID/域名去生成。
+  </div>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 16px 0px 8px;"><strong>这一步容易踩的坑：</strong></p>
+  <div style="margin: 12px 0px 22px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">现象</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">原因与处理</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">访问 Worker 报 1101 / 后台打不开</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">多半是 KV 没绑，或绑定的变量名不是 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">KV</code>；改完记得重新部署</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">/admin 提示未配置密码</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">变量名写成小写 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">admin</code> 了；必须是大写 ADMIN，保存后重新部署</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">粘贴代码后仍是默认欢迎页</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">只点了「保存」没点「部署」；或粘贴时带了行号导致语法错误，改用 Raw 页面复制</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">自定义域名打不开</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px; vertical-align: top;">域名未托管到 Cloudflare，或记录没走代理（橙色云）；先在触发器里确认为 active</td></tr>
+    </tbody>
+  </table></div>
+
+  <hr style="border-color: rgb(229, 231, 235) currentcolor currentcolor; border-image: none; border-style: solid none none; border-top: 1px solid #e5e7eb; border-width: 1px 0px 0px; border: 0px; margin: 36px 0px;" />
+
+  <h2 id="s2" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 2 步</span>部署检测 Worker（CheckSocks5）</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">gate 本身无法从 GitHub 直接连到那些 SSTP 节点，需要一个「站在 Cloudflare 上」的帮手替它逐个试连。这个帮手就是 CheckSocks5，它同时也是<strong>第 4 步 Secret <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">DOMAIN</code> 的唯一来源</strong>。</p>
+
+  <ol style="font-size: 16px; line-height: 1.85; margin: 16px 0px; padding-left: 24px;">
+    <li style="margin: 10px 0px;">打开 <a href="https://github.com/lsh8848/cm-Workers-CheckSocks5" style="color: #0369a1;">https://github.com/lsh8848/cm-Workers-CheckSocks5</a>，点 <strong>Fork</strong>（Fork 只是为了留一份自己的代码，不 Fork 直接打开仓库里的 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">_worker.js</code> 复制也可以）。</li>
+    <li style="margin: 10px 0px;">进 Cloudflare 控制台 → <strong>Workers 和 Pages</strong> → <strong>创建</strong> → <strong>创建 Worker</strong>，起名例如 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">checksocks5</code>。</li>
+    <li style="margin: 10px 0px;">把仓库里 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">_worker.js</code> 的全部内容粘贴进编辑器，点「部署」。</li>
+    <li style="margin: 10px 0px;">记下这个 Worker 的域名，形如 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://xxx.你的用户名.workers.dev</code>。</li>
+    <li style="margin: 10px 0px;"><strong>验证</strong>：浏览器打开
+      <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://你的Worker域名/check?sstp=vpn:vpn@任意节点:端口</code>
+      ，能返回 JSON 即成功。例如：
+    </li>
+  </ol>
+
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">https://check.你的用户名.workers.dev/check?sstp=vpn:vpn@public-vpn-114.opengw.net:443</pre>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">正常返回长这样（字段值为<strong>示例</strong>）：</p>
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">{
+  "success": true,
+  "responseTime": 132,
+  "colo": "NRT",
+  "error": null,
+  "exit": {
+    "ip": "203.0.113.10",
+    "country": "Japan",
+    "country_code": "JP",
+    "city": "Tokyo",
+    "continent": "AS",
+    "asn": { "asn": 12345, "name": "Example ISP", "org": "Example Org" },
+    "is_datacenter": false
+  }
+}</pre>
+
+  <div style="margin: 18px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">字段</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">含义</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">gate 拿它做什么</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">success</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">该节点这次是否连通</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">只保留 true 的节点进入清单</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">responseTime</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">检测耗时（毫秒）</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">面板显示与排序参考</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">colo</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">命中的 Cloudflare 机房代码</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">写入 data.json 供筛选</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">exit.country_code</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">出口国家/地区</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">分组、每国数量上限、备注里的中文国名</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">exit.is_datacenter</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">出口 IP 是否为云厂商/机房 IP</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">判定「住宅 / 机房」标签（本次更新的重点）</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">error</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">失败原因文本</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">统计失败类型、判断 Worker 自身是否异常</td></tr>
+    </tbody>
+  </table></div>
+
+  <div style="background: rgb(239, 246, 255); border-color: rgb(191, 219, 254) rgb(191, 219, 254) rgb(191, 219, 254) rgb(37, 99, 235); border-image: none; border-left: 4px solid #2563eb; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(191, 219, 254); color: #1e3a8a; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>两个判读要点：</strong>
+    <ul style="margin: 8px 0px 0px; padding-left: 22px;">
+      <li>返回 <code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">"success": false</code> <strong>也算部署成功</strong>——它说明 Worker 正常应答，只是那个节点恰好不通（公共节点本来就大量失效，很正常）。</li>
+      <li>请把这个地址的 <strong>host 抄下来</strong>（去掉 <code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">https://</code> 和后面的路径），第 4 步填 Secret 时用的就是它。</li>
+    </ul>
+  </div>
+
+  <div style="background: rgb(254, 242, 242); border-color: rgb(254, 202, 202) rgb(254, 202, 202) rgb(254, 202, 202) rgb(220, 38, 38); border-image: none; border-left: 4px solid #dc2626; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(254, 202, 202); color: #7f1d1d; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>不要给检测 Worker 加访问认证。</strong>Zero Trust Access、WAF 自定义规则、防火墙「仅允许特定 IP」都会让 GitHub Actions 的请求变成 403/429，表现就是工作流里成千上万条「Worker 异常」。这个接口本身只回一句「通不通」，公开访问不构成风险。
+  </div>
+
+  <hr style="border-color: rgb(229, 231, 235) currentcolor currentcolor; border-image: none; border-style: solid none none; border-top: 1px solid #e5e7eb; border-width: 1px 0px 0px; border: 0px; margin: 36px 0px;" />
+
+  <h2 id="s3" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 3 步</span>Fork gate 仓库</h2>
+
+  <ol style="font-size: 16px; line-height: 1.85; margin: 16px 0px; padding-left: 24px;">
+    <li style="margin: 10px 0px;">打开 <a href="https://github.com/hezhanleiok/gate" style="color: #0369a1;">https://github.com/hezhanleiok/gate</a>，点右上角 <strong>Fork</strong>，选自己的账号。</li>
+    <li style="margin: 10px 0px;">仓库名保持默认的 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">gate</code> 最省事；改了名字，最终订阅地址会跟着变（后面自动推导，不用手配）。</li>
+    <li style="margin: 10px 0px;">请保持仓库为 <strong>Public</strong>：GitHub Pages 在免费账号上只对公开仓库开放；工作流跑在公开仓库上也不消耗私有分钟数。</li>
+  </ol>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">fork 之后这份代码完全属于你：抓取逻辑、检测并发、发布产物都在你自己的 Actions 额度里跑。</p>
+
+  <h2 id="s4" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 4 步</span>设置 Secret DOMAIN（唯一必填项）</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">这是<strong>整个仓库唯一需要你填的配置</strong>。路径：</p>
+  <p style="font-size: 16px; line-height: 1.78; margin: 10px 0px;"><strong>仓库 → Settings → Secrets and variables → Actions → New repository secret</strong></p>
+
+  <div style="margin: 18px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">Name</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">Value</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">说明</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">DOMAIN</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #059669; padding: 10px 12px;"><code style="background: rgb(236, 253, 245); border-radius: 4px; border: 1px solid rgb(167, 243, 208); color: #065f46; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">check.你的用户名.workers.dev</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">只填 <strong>host</strong>，正确写法</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">—</td><td style="border: 1px solid rgb(226, 232, 240); color: #dc2626; padding: 10px 12px;"><code style="background: rgb(254, 242, 242); border-radius: 4px; border: 1px solid rgb(254, 202, 202); color: #7f1d1d; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">https://check.你的用户名.workers.dev</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">带了协议——脚本会自动补，但建议按规范只填 host</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">—</td><td style="border: 1px solid rgb(226, 232, 240); color: #dc2626; padding: 10px 12px;"><code style="background: rgb(254, 242, 242); border-radius: 4px; border: 1px solid rgb(254, 202, 202); color: #7f1d1d; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">check.xxx.workers.dev/check?sstp=vpn:vpn@</code></td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">把整条地址塞进 Secret，属于旧写法，不必要</td></tr>
+    </tbody>
+  </table></div>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">工作流会自动把它拼成检测地址：</p>
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">https://[DOMAIN]/check?sstp=vpn:vpn@</pre>
+
+  <div style="background: rgb(239, 246, 255); border-color: rgb(191, 219, 254) rgb(191, 219, 254) rgb(191, 219, 254) rgb(37, 99, 235); border-image: none; border-left: 4px solid #2563eb; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(191, 219, 254); color: #1e3a8a; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    为什么只填 host？因为「fork 后必须去源码里改占位符」是模板仓库最容易翻车的地方：有人改漏、有人把整条 URL 塞进去、有人忘了改就运行，最后只能看到一句看不懂的「全部节点检测失败」。现在工作流启动第一步就校验这个 Secret——没设置会直接以错误终止，并告诉你去哪一项里添加。脚本内部也保留了容错：补协议、补 <code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">/check</code>、补 <code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">?sstp=vpn:vpn@</code> 都能纠正。
+  </div>
+
+  <h2 id="s5" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 5 步</span>启用 GitHub Pages</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">节点清单要「发布」成一个可访问的网址，靠的是 Pages。设置路径：</p>
+  <p style="font-size: 16px; line-height: 1.78; margin: 10px 0px;"><strong>仓库 → Settings → Pages → Build and deployment → Source 选 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">GitHub Actions</code></strong></p>
+
+  <div style="background: rgb(236, 253, 245); border-color: rgb(167, 243, 208) rgb(167, 243, 208) rgb(167, 243, 208) rgb(5, 150, 105); border-image: none; border-left: 4px solid #059669; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(167, 243, 208); color: #065f46; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    这一步<strong>多数情况下可以跳过</strong>：工作流里有一步会自动调用 Pages 接口（<code style="background: rgb(220, 252, 231); border-radius: 4px; border: 1px solid rgb(167, 243, 208); color: #065f46; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">POST /repos/.../pages</code>，build_type=workflow）帮你打开；已经开启过会返回 409，脚本按成功处理。只有权限不够（例如返回 403）时才需要你手动按上面路径设置一次。
+  </div>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">Pages 就绪后你会得到三个地址（以用户名 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">alice</code>、仓库 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">gate</code> 为例）：</p>
+  <ul style="font-size: 15px; line-height: 1.9; margin: 12px 0px; padding-left: 24px;">
+    <li style="margin: 6px 0px;"><strong>在线面板</strong>：<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://alice.github.io/gate/</code></li>
+    <li style="margin: 6px 0px;"><strong>订阅清单</strong>：<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://alice.github.io/gate/nodes.txt</code></li>
+    <li style="margin: 6px 0px;"><strong>结构化数据</strong>：<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://alice.github.io/gate/data.json</code></li>
+  </ul>
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">这三个地址不需要你写进任何配置文件——脚本会用 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">GITHUB_REPOSITORY</code> 自动推导订阅地址，面板则自己按当前网址定位 data.json。</p>
+
+  <h2 id="s6" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 6 步</span>运行工作流，生成 nodes.txt</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">路径：<strong>仓库 → Actions → 左侧「VPN Gate Node Check」→ Run workflow → 选分支（main 或 test）→ Run workflow</strong>。</p>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">运行前有三个可选参数，保持默认就能出结果：</p>
+  <div style="margin: 18px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">参数</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">默认</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">什么时候要改</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">concurrency</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">32</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">检测很慢或想更激进时调大/调小</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">timeout</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">25</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">单个节点等待秒数，公网高延迟节点可调到 35</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">max_nodes</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">0（全部）</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">想更快出结果时填 40 之类；脚本会先按延迟/评分排序再截断</td></tr>
+    </tbody>
+  </table></div>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">一次正常运行的日志顺序大致是这样：</p>
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">========== VPN GATE ==========
+主源(官方 API) 获取到 96 个原始节点
+原始节点 96, SSTP 87, 去重后 87
+========== CLOUDFLARE WORKER ==========
+提交检测: 87
+成功 74, 失败 13（Worker 异常 0）, 用时 48.6s
+========== EDGE POOL ==========
+入口地址池: 静态/配置 20 个, API 0 个, 合并 20 个
+========== RESULT ==========
+可用节点 74, 国家/地区 9, nodes.txt 66 行
+========== WEBSITE ==========
+完成（GitHub Pages 部署由 workflow 执行）</pre>
+
+  <div style="background: rgb(239, 246, 255); border-color: rgb(191, 219, 254) rgb(191, 219, 254) rgb(191, 219, 254) rgb(37, 99, 235); border-image: none; border-left: 4px solid #2563eb; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(191, 219, 254); color: #1e3a8a; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>正常区间参考：</strong>官方 API 一次给 90～100 行原始数据，其中约 87 个支持 TCP（即 SSTP 端口）；实测能连通的通常有 60～80 个；最终发布清单受每国数量上限约束，一般 60～70 行，整个过程 1～2 分钟。
+  </div>
+
+  <div style="background: rgb(255, 251, 235); border-color: rgb(253, 230, 138) rgb(253, 230, 138) rgb(253, 230, 138) rgb(217, 119, 6); border-image: none; border-left: 4px solid #d97706; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(253, 230, 138); color: #78350f; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>发布护栏（新增）：</strong>如果这次运行<strong>一个节点都没连通</strong>，或者<strong>所有请求都是 Worker 自身异常</strong>（比如 Secret 填错、Worker 挂了），脚本会以错误终止、<strong>不覆盖上一次发布的产物</strong>。这样你的订阅不会在半夜被清空，第二天打开还是昨天那份可用的清单。
+  </div>
+
+  <h2 id="s7" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 7 步</span>把 nodes.txt 填进 edgetunnel</h2>
+
+  <ol style="font-size: 16px; line-height: 1.85; margin: 16px 0px; padding-left: 24px;">
+    <li style="margin: 10px 0px;">打开 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://你的域名/admin</code>，用 ADMIN 密码登录。</li>
+    <li style="margin: 10px 0px;">找到「自定义优选 IP / 优选 IP 订阅」这一项（不同版本命名略有差异），填入
+      <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://用户名.github.io/仓库名/nodes.txt</code>。</li>
+    <li style="margin: 10px 0px;">保存，然后在客户端（v2rayN、Clash、Shadowrocket 等）更新订阅即可。</li>
+  </ol>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">nodes.txt 每行三部分，用 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">#</code> 和 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">$</code> 分隔：</p>
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">edge1.example.com:443#日本-住宅-01$sstp://vpn:vpn@public-vpn-114.opengw.net:443
+edge2.example.com:443#日本-住宅-02$sstp://vpn:vpn@public-vpn-242.opengw.net:443
+edge1.example.com:443#韩国-机房-01$sstp://vpn:vpn@public-vpn-153.opengw.net:22494</pre>
+  <ul style="font-size: 15px; line-height: 1.9; margin: 12px 0px; padding-left: 24px;">
+    <li style="margin: 6px 0px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">#</code> 前面是<strong>优选入口</strong>（host:port），这是喂给 edgetunnel 的部分，同一国家内会轮转使用不同入口。</li>
+    <li style="margin: 6px 0px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">#</code> 后面是<strong>备注</strong>：国家中文名 + 住宅/机房 + 该类别内序号，住宅优先排前面。</li>
+    <li style="margin: 6px 0px;"><code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">$</code> 后面是<strong>原始 SSTP 链接</strong>，方便你手动导入系统 VPN 客户端（Windows：设置 → 网络和 Internet → VPN → 添加 VPN，类型选 SSTP，服务器填 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">public-vpn-114.opengw.net</code>，用户名密码都是 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">vpn</code>）。</li>
+  </ul>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">打开面板 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">https://用户名.github.io/仓库名/</code> 还能按国家/住宅机房筛选、单条复制、一键复制全部或下载 nodes.txt，页面每 5 分钟自动刷新一次数据。</p>
+
+  <h2 id="s8" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;"><span style="background: rgb(14, 165, 233); border-radius: 6px; color: white; display: inline-block; font-size: 13px; font-weight: 600; margin-right: 10px; padding: 2px 9px; vertical-align: middle;">第 8 步</span>（可选）定时自动更新</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">作为模板仓库，工作流<strong>默认只开手动触发</strong>，不替你决定调度频率。要自动更新时，编辑 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">.github/workflows/check.yml</code>，把文件里注释好的这段取消注释，并按自己的需求改时间：</p>
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">on:
+  schedule:
+    - cron: '*/30 * * * *'   # 每 30 分钟一次，改成你自己的节奏
+  workflow_dispatch:</pre>
+
+  <div style="background: rgb(255, 251, 235); border-color: rgb(253, 230, 138) rgb(253, 230, 138) rgb(253, 230, 138) rgb(217, 119, 6); border-image: none; border-left: 4px solid #d97706; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(253, 230, 138); color: #78350f; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>关于 GitHub 定时的三个现实：</strong>
+    <ul style="margin: 8px 0px 0px; padding-left: 22px;">
+      <li>最小粒度约 5 分钟，且实际触发常比计划晚几分钟到十几分钟，不要卡点依赖它。</li>
+      <li>仓库连续 60 天没有任何提交，定时任务会被 GitHub 自动停用。</li>
+      <li>公开仓库的 Actions 时长免费；<strong>私有</strong>仓库每月 2000 分钟，每 30 分钟跑一次（约 2880 分钟/月）会超，请放大间隔。</li>
+    </ul>
+  </div>
+
+  <h2 id="s9" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">部署完成验证清单</h2>
+  <ul style="font-size: 16px; line-height: 1.9; list-style: none; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 9px 0px;">☐ &nbsp;第 2 步那个 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">/check?sstp=...</code> 能返回 JSON（不管 success 是 true 还是 false）</li>
+    <li style="margin: 9px 0px;">☐ &nbsp;仓库 Secrets 里存在 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">DOMAIN</code>，且值只有 host</li>
+    <li style="margin: 9px 0px;">☐ &nbsp;Actions 里这次运行是绿色 ✓，日志末尾出现「完成（GitHub Pages 部署由 workflow 执行）」</li>
+    <li style="margin: 9px 0px;">☐ &nbsp;<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">https://用户名.github.io/仓库名/nodes.txt</code> 能打开且有内容</li>
+    <li style="margin: 9px 0px;">☐ &nbsp;面板首页能看到节点列表、国家分组与「住宅/机房」标签</li>
+    <li style="margin: 9px 0px;">☐ &nbsp;edgetunnel 后台已填入该 nodes.txt 地址</li>
+    <li style="margin: 9px 0px;">☐ &nbsp;客户端更新订阅后能选中节点并连通</li>
+  </ul>
+
+  <hr style="border-color: rgb(229, 231, 235) currentcolor currentcolor; border-image: none; border-style: solid none none; border-top: 1px solid #e5e7eb; border-width: 1px 0px 0px; border: 0px; margin: 36px 0px;" />
+
+  <h2 id="s10" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">这次更新了什么</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">版本：<strong>bf3dc92 + b24936f</strong>，14 个文件变更（+2001 / −693），新增 <strong>32 个自动化测试</strong>。整体方向是把仓库从「一份需要改代码才能跑的脚本」变成「fork 后只设一个 Secret 就能跑的模板」，同时补齐可靠性和工程质量。分六组说明。</p>
+
+  <h3 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 26px 0px 10px;">一、模板化：把「必须改源码」的配置项全部请出去</h3>
+  <div style="margin: 14px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">项目</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">之前</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">现在</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">检测地址</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">源码里写占位符，要自己改 CHECK_WORKER 完整 URL</td><td style="border: 1px solid rgb(226, 232, 240); color: #059669; padding: 10px 12px;">GitHub Secret <code style="background: rgb(236, 253, 245); border-radius: 4px; border: 1px solid rgb(167, 243, 208); color: #065f46; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">DOMAIN</code> 只填 host，工作流拼装；缺失/仍是占位符时启动即报错并给指引</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">订阅地址</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">要手改 NODES_URL 里的用户名和仓库名</td><td style="border: 1px solid rgb(226, 232, 240); color: #059669; padding: 10px 12px;">由 GITHUB_REPOSITORY 自动推导，README 里这一步直接删掉</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">定时任务</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">自带一个写死的 cron</td><td style="border: 1px solid rgb(226, 232, 240); color: #059669; padding: 10px 12px;">默认不启用，示例以注释形式保留，由用户自己决定节奏</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">Pages 启用</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">调用方式不合法（PUT 带 source.path=/public），常静默失败</td><td style="border: 1px solid rgb(226, 232, 240); color: #059669; padding: 10px 12px;">改为 POST build_type=workflow；已存在（409）视为成功；403 时明确提示去 Settings 手动切换</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 26px 0px 10px;">二、可靠性：不再把坏结果发布出去</h3>
+  <ul style="font-size: 15px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;"><strong>发布护栏</strong>：0 个成功节点、或全部是 Worker 自身异常时，终止运行并<strong>保留上一次发布的产物</strong>，订阅不会被清空。</li>
+    <li style="margin: 8px 0px;"><strong>成功率阈值可选</strong>：新增 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">MIN_SUCCESS_RATIO</code>，默认 0（不限制）。之所以不做硬阈值，是因为 VPN Gate 的公共节点本身成功率就不高，写死 30% 会让任务频繁「假红」。</li>
+    <li style="margin: 8px 0px;"><strong>原子写入</strong>：三个产物都先写临时文件再原子替换，运行中途被取消不会留下半截 JSON。</li>
+    <li style="margin: 8px 0px;"><strong>空入口池兜底</strong>：<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">EDGE_HOSTS</code> 被清空时自动回退内置入口池，不再触发除零错误。</li>
+  </ul>
+
+  <h3 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 26px 0px 10px;">三、检测准确性与速度</h3>
+  <ul style="font-size: 15px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;"><strong>住宅/机房分类改为以检测接口的 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">is_datacenter</code> 为准</strong>。之前那套 ASN 关键字表基本是死代码（该字段一直是布尔值）；更严重的是旧版还会「主机名以 public-vpn 开头就判机房」，而 VPN Gate 的节点<strong>全部</strong>是这个名字，等于所有节点都被贴成机房标签。现在关键字只在字段缺失时作为兜底，并恢复了 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">未知</code> 这一类。</li>
+    <li style="margin: 8px 0px;"><strong>超时对齐</strong>：单节点从 90 秒降到 25 秒（检测 Worker 内部上限 12 秒，等更久没意义），并新增整体截止时间，避免个别卡死请求拖垮整个任务。</li>
+    <li style="margin: 8px 0px;"><strong>连接复用与重试</strong>：连接池大小跟随并发数扩容，三个 HTTP 出口统一加了退避重试，减少偶发网络抖动造成的误判。</li>
+    <li style="margin: 8px 0px;"><strong>抽样前先排序</strong>：限制检测数量时，先按 VPN Gate 的延迟/评分排序再截断，不会把最快的节点切掉。</li>
+  </ul>
+
+  <h3 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 26px 0px 10px;">四、产物格式</h3>
+  <ul style="font-size: 15px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;"><strong>nodes.txt</strong>：每国数量上限（住宅 20 / 机房 10，可调）、链接去重、备注清洗掉会破坏解析的字符、住宅优先排序、序号按类别独立计数、同一国家内轮转不同优选入口。</li>
+    <li style="margin: 8px 0px;"><strong>IPv6 端点</strong>：统一规范成 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">[地址]:端口</code>，无法解析的端点直接丢弃而不是写出坏行。</li>
+    <li style="margin: 8px 0px;"><strong>data.json</strong>：去掉重复字段、改为紧凑输出，新增 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">schema_version</code>、耗时、超时计数、Worker 异常数等统计。</li>
+    <li style="margin: 8px 0px;"><strong>不再公开完整检测地址</strong>：产物里原本会带你的整条 Worker URL（含查询串），现在只记录 host。</li>
+  </ul>
+
+  <h3 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 26px 0px 10px;">五、面板与文档</h3>
+  <ul style="font-size: 15px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;">面板所有渲染改为转义输出（此前用字符串拼 innerHTML，节点备注里带尖括号就能把页面结构撑坏）；数据没更新时不再重复重绘；新增按国家/类型筛选、单条复制、复制全部、下载 nodes.txt。</li>
+    <li style="margin: 8px 0px;">README 全文重写：架构图、fork 三步、Secret 说明、定时示例、完整配置表、产物格式、本地运行、FAQ、已知限制与免责声明。</li>
+  </ul>
+
+  <h3 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 26px 0px 10px;">六、工程质量</h3>
+  <ul style="font-size: 15px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;">新增 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">tests/</code>：32 个用例，除单元逻辑外还包含一个<strong>离线端到端测试</strong>（本地起假数据源和假检测接口，跑完整流程并逐字符校验 nodes.txt 内容、验证失败时不会写文件）。</li>
+    <li style="margin: 8px 0px;">新增 CI（代码检查 + 测试），任意分支推送都会跑；补齐依赖锁定、开发依赖、LICENSE、行尾规范化配置。</li>
+  </ul>
+
+  <div style="background: rgb(239, 246, 255); border-color: rgb(191, 219, 254) rgb(191, 219, 254) rgb(191, 219, 254) rgb(37, 99, 235); border-image: none; border-left: 4px solid #2563eb; border-radius: 8px; border-style: solid; border-width: 1px 1px 1px 4px; border: 1px solid rgb(191, 219, 254); color: #1e3a8a; font-size: 15px; line-height: 1.8; margin: 20px 0px; padding: 14px 18px;">
+    <strong>旧 fork 升级要做的事：</strong>同步最新代码 → 确认已添加 <code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">DOMAIN</code> Secret → 可以删掉旧的 <code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">CHECK_WORKER</code>、<code style="background: rgb(219, 234, 254); border-radius: 4px; border: 1px solid rgb(191, 219, 254); color: #1e40af; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">NODES_URL</code> 等自定义项（仍兼容，但已非必需）。除此之外不需要改动其他文件。
+  </div>
+
+  <h2 id="s11" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">常见问题 FAQ</h2>
+  <ul style="font-size: 16px; line-height: 1.9; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 12px 0px;"><strong>必须准备自定义域名吗？</strong><br />不必须，<code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">*.workers.dev</code> 也能跑完全部流程；但该域名在部分地区不可直连，检测 Worker 和 edgetunnel 都建议绑自定义域名。</li>
+    <li style="margin: 12px 0px;"><strong>Secret 填完运行，报「未配置检测 Worker 地址」。</strong><br />Secret 名字必须是全大写 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 1px 5px;">DOMAIN</code>，且添加在仓库级 Secrets 里；改完要重新触发一次运行。</li>
+    <li style="margin: 12px 0px;"><strong>日志里全是 Worker 异常 / 全部失败。</strong><br />先用浏览器手动访问检测地址确认能返回 JSON；再检查有没有给这个 Worker 加 Access 认证或 WAF 拦截；最后确认 host 拼写正确。</li>
+    <li style="margin: 12px 0px;"><strong>Pages 部署步骤 403。</strong><br />去 Settings → Pages 手动把 Source 改成 GitHub Actions 一次即可；自动启用那步只是省你手点，失败不代表流程坏了。</li>
+    <li style="margin: 12px 0px;"><strong>成功节点数时多时少，正常吗？</strong><br />正常。VPN Gate 是志愿者公共节点，上下线频繁，同一份清单不同时间跑差异很大；这也是发布护栏只在「全失败」时拦停的原因。</li>
+    <li style="margin: 12px 0px;"><strong>为什么有的节点标「机房」？</strong><br />检测接口判定出口 IP 属于云厂商/数据中心，这类 IP 在一些网站会触发风控；想优先用住宅 IP，看面板里的「住宅」筛选即可，nodes.txt 也已把住宅排在前面。</li>
+    <li style="margin: 12px 0px;"><strong>能加更多节点源吗？</strong><br />官方接口单次返回约 90～100 行，其中约 87 个支持 TCP（本项目按 SSTP 端口处理）。想扩大规模需要多个数据源合并，脚本目前的主源 + 镜像回退已经覆盖了常见故障。</li>
+    <li style="margin: 12px 0px;"><strong>上游有更新，我的 fork 怎么同步？</strong><br />在 fork 页面点 <strong>Sync fork → Update branch</strong>；或者添加上游 remote 后 pull。</li>
+  </ul>
+
+  <h2 id="s12" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">安全提醒与免费额度</h2>
+  <ul style="font-size: 15px; line-height: 1.85; margin: 14px 0px; padding-left: 24px;">
+    <li style="margin: 8px 0px;">ADMIN 请用足够长的随机串，它直接决定谁能改你的订阅配置；检测 Worker 无需密码，但请别给它套访问认证。</li>
+    <li style="margin: 8px 0px;">nodes.txt 与 data.json 是<strong>公开</strong>的（挂在 Pages 上）。里面只有优选入口和国家/备注信息，不含 UUID 与密码，但仍不建议把它当作私密订阅分发。</li>
+    <li style="margin: 8px 0px;">真正的私密性由 edgetunnel 的 UUID 保证，请务必不要把带 UUID 的订阅链接贴到公开场合。</li>
+    <li style="margin: 8px 0px;">VPN Gate 节点是公共志愿者节点，出口可能被他人共享、可能被目标网站拦截；请勿用于任何违法违规用途，遵守所在地区的法律法规。</li>
+  </ul>
+  <div style="margin: 18px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">服务</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">免费额度（参考）</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">本方案用量</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">Cloudflare Workers</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">约 10 万次请求/天</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">每次运行约 90 次检测，每小时跑也远不到上限</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">Cloudflare Workers KV</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">读 10 万/天、写 1000/天、1GB 存储</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">仅 edgetunnel 存配置，量极小</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">GitHub Pages</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">软限约 100GB/月带宽、站点 1GB</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">产物几十 KB，可忽略</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">GitHub Actions</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">公开仓库免费；私有仓库 2000 分钟/月</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 10px 12px;">每次约 1～2 分钟</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="s13" style="border-bottom: 2px solid rgb(229, 231, 235); color: #0f172a; font-size: 23px; font-weight: 700; line-height: 1.45; margin: 42px 0px 16px; padding: 0px 0px 10px;">附录：配置项速查与目录结构</h2>
+
+  <p style="font-size: 16px; line-height: 1.78; margin: 14px 0px;">除 <code style="background: rgb(241, 245, 249); border-radius: 4px; border: 1px solid rgb(226, 232, 240); color: #be123c; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 1px 6px;">DOMAIN</code> 外，以下环境变量都是可选的（在 workflow 的 env 或本地运行时设置）：</p>
+  <div style="margin: 18px 0px; overflow-x: auto;"><table style="border-collapse: collapse; font-size: 14px; line-height: 1.7; width: 100%;">
+    <thead><tr>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">变量</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">默认</th>
+      <th style="background: rgb(241, 245, 249); border: 1px solid rgb(226, 232, 240); color: #0f172a; font-weight: 600; padding: 10px 12px; text-align: left;">作用</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">CHECK_WORKER</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">空</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">本地运行用完整检测地址；Actions 里由 DOMAIN 拼装</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">CHECK_CONCURRENCY</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">32</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">并发检测数量</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">CHECK_TIMEOUT</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">25</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">单节点超时（秒）</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">CHECK_DEADLINE</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">1200</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">整轮检测截止（秒）</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">MAX_CHECK_NODES</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">0</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">最多检测多少个节点，0 为全部</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">MIN_SUCCESS_RATIO</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">0</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">成功率低于此值则判定本次运行失败，0 为不限制</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">MAX_RESIDENTIAL_PER_COUNTRY</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">20</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">每国住宅节点发布上限</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">MAX_DATACENTER_PER_COUNTRY</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">10</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">每国机房节点发布上限</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">EDGE_HOSTS</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">内置池</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">优选入口列表，建议换成你自己的域名优选 IP</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">VPNGATE_API / VPNGATE_MIRROR</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">内置</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">主数据源与镜像回退源</td></tr>
+      <tr><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">NODES_URL</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">自动</td><td style="border: 1px solid rgb(226, 232, 240); color: #334155; padding: 9px 12px;">订阅地址，通常不需要设置</td></tr>
+    </tbody>
+  </table></div>
+
+  <pre style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.7; margin: 16px 0px; overflow-x: auto; padding: 14px 16px; white-space: pre-wrap; word-break: break-word;">gate/
+  vpngate.py                 主脚本（抓取  检测  生成产物）
+  requirements.txt           运行依赖
+  web/index.html             面板模板
+  public/                    工作流生成的产物（data.json / index.html / nodes.txt）
+  tests/                     32 个自动化测试
+  .github/workflows/
+      check.yml              抓取与发布（手动触发，可选加 cron）
+      ci.yml                 代码检查与测试
+  README.md                  部署与配置说明</pre>
+
+  <hr style="border-color: rgb(229, 231, 235) currentcolor currentcolor; border-image: none; border-style: solid none none; border-top: 1px solid #e5e7eb; border-width: 1px 0px 0px; border: 0px; margin: 36px 0px;" />
+
+  <p style="color: #64748b; font-size: 14px; line-height: 1.8; margin: 14px 0px;"><strong>免责声明：</strong>本文涉及的第三方项目（edgetunnel、cm-Workers-CheckSocks5、VPN Gate）归各自作者所有；公共节点的稳定性、可用性与合规性由节点提供者负责，本项目只做抓取、检测与展示，不提供任何节点。请仅用于合法用途。<br /><strong>相关地址：</strong><a href="https://github.com/hezhanleiok/gate" style="color: #0369a1;">gate 仓库</a> ｜ <a href="https://github.com/cmliu/edgetunnel" style="color: #0369a1;">edgetunnel</a> ｜ <a href="https://github.com/lsh8848/cm-Workers-CheckSocks5" style="color: #0369a1;">CheckSocks5</a> ｜ <a href="https://www.vpngate.net/" style="color: #0369a1;">VPN Gate</a></p>
+
+</div>
+<!--▲▲▲ 复制到这里结束 ▲▲▲--></div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>免费订阅freesub2.0更新获取包含家宽住宅IP原生IP一键部署自己的专属订阅#freevpn #freesubscribers#FREE RESIDENTIAL IP · 晓鹤的博客</title>
+<meta name="description" content="         
+ 
+
+   
+ 
+   FREE NODE PIPELINE · V2 重构全记录 
+   免费节点订阅池 2.0：一次彻底的重构，把&quot;看着能用&quot;变成&quot;真的能用&quot; 
+   
+     协议覆盖 4→8 
+     导出损">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">免费订阅freesub2.0更新获取包含家宽住宅IP原生IP一键部署自己的专属订阅#freevpn #freesubscribers#FREE RESIDENTIAL IP</h1>
+  <div class="meta"><time>2026-09-12</time></div>
+  <div class="content"><div class="separator" style="clear: both; text-align: center;"><a href="assets/img/26c3d9c2486f.jpg" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1536" data-original-width="2752" src="assets/img/26c3d9c2486f.jpg" /></a></div><div class="separator" style="clear: both; text-align: center;"><br /></div><!--Blogger 直接粘贴版: 全内联样式, 无外部依赖, 主题兼容-->
+<div style="font-family: &quot;Segoe UI&quot;, &quot;PingFang SC&quot;, &quot;Microsoft YaHei&quot;, system-ui, sans-serif; line-height: 1.85; margin: 0px auto; max-width: 820px;">
+
+<span style="color: #2d3748;"><!--═══════════ 标题区 ═══════════--></span>
+<div style="background: linear-gradient(135deg, rgb(26, 32, 44) 0%, rgb(45, 55, 72) 60%, rgb(74, 85, 104) 100%); border-radius: 16px; color: #2d3748; font-size: 16px; margin-bottom: 28px; padding: 38px 34px;">
+  <div style="color: #a0aec0; font-size: 13px; letter-spacing: 3px; margin-bottom: 10px;">FREE NODE PIPELINE · V2 重构全记录</div>
+  <h1 style="color: white; font-size: 30px; font-weight: 700; line-height: 1.3; margin: 0px 0px 14px;">免费节点订阅池 2.0：一次彻底的重构，把"看着能用"变成"真的能用"</h1>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+    <span style="background: rgb(72, 187, 120); border-radius: 999px; color: white; font-size: 13px; font-weight: 600; padding: 4px 14px;">协议覆盖 4→8</span>
+    <span style="background: rgb(237, 137, 54); border-radius: 999px; color: white; font-size: 13px; font-weight: 600; padding: 4px 14px;">导出损坏率 55%→0%</span>
+    <span style="background: rgb(66, 153, 225); border-radius: 999px; color: white; font-size: 13px; font-weight: 600; padding: 4px 14px;">耗时 40分→8.4分</span>
+    <span style="background: rgb(159, 122, 234); border-radius: 999px; color: white; font-size: 13px; font-weight: 600; padding: 4px 14px;">家宽识别 四道闸门</span>
+  </div>
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 前言 ═══════════--></span>
+<p style="color: #2d3748; font-size: 17px;">网上免费节点订阅池很多，但几乎都有一个通病：<b>节点数量看着很可观，导入客户端后真正能连上的没几个。</b>这篇文章记录了我对免费订阅池的一次彻底重构 —— 从测活引擎、国家归类、家宽识别到导出格式全部重写，并用<b>真实测量数据</b>对比新旧两版的准确率。文末还整理了几个很有意思的"特殊情况"，比如同一个 IP 在不同风险检测网站上判定完全相反、机房伪装家宽的识别等，都是实际踩坑的记录。</p><h3 style="text-align: left;"><span style="font-size: large;"><span style="color: #2d3748;">代码下载：</span><span style="color: red;">【<a href="https://pan.quark.cn/s/8f3f62d2471e" rel="nofollow" target="_blank">地址1</a>】，【<a href="https://pan.xunlei.com/s/VP1JnyjSDVGj2CZ3n3D1rm09A1?pwd=m89k#" rel="nofollow" target="_blank">地址2</a>】</span><br /><span style="color: #2d3748;">仓库地址：</span><span style="color: red;">【<a href="https://github.com/hezhanleiok/freesub" rel="nofollow" target="_blank">点此跳转</a>】</span></span></h3>
+
+<div style="background: rgb(235, 248, 255); border-left: 4px solid rgb(66, 153, 225); border-radius: 8px; color: #2d3748; font-size: 16px; margin: 24px 0px; padding: 16px 20px;">
+  <b>📌 测量方法说明：</b>文中所有数字均来自 GitHub Actions 真实运行日志与本地对照实验（样本量 4000-5000 节点/轮），不是估算值。
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 目录 ═══════════--></span>
+<div style="background: rgb(247, 250, 252); border-radius: 12px; border: 1px solid rgb(226, 232, 240); color: #2d3748; font-size: 16px; margin: 26px 0px; padding: 22px 26px;">
+  <div style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">📑 目录</div>
+  <div style="display: grid; font-size: 15px; gap: 6px 20px; grid-template-columns: 1fr 1fr;">
+    <div>一、旧版到底有多不准</div>
+    <div>二、新版架构全景</div>
+    <div>三、节点有效性检测对比</div>
+    <div>四、国家归类准确率</div>
+    <div>五、家宽识别：四道闸门</div>
+    <div>六、导出保真：最隐蔽的坑</div>
+    <div>七、速度：快了 80%</div>
+    <div>八、特殊情况合集（重点）</div>
+  </div>
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 一、旧版问题 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">一、旧版到底有多不准：逐环节体检</h2>
+
+<p style="color: #2d3748; font-size: 16px;">旧版用 <b>Xray-core 1.8.24</b>（2023 年的老内核）做测活，整条链路是"抓取 → 字符串解析 → 测活 → 按入口 IP 归类 → 原样转发 URI"。重构前我先做了一次全面审计，每个环节的问题都拿到了实测证据：</p>
+
+<div style="color: #2d3748; font-size: 16px; overflow-x: auto;">
+<table style="border-collapse: collapse; font-size: 14.5px; margin: 18px 0px; width: 100%;">
+  <tbody><tr style="background: rgb(45, 55, 72); color: white;">
+    <th style="border-radius: 8px 0px 0px; padding: 12px 14px; text-align: left;">环节</th>
+    <th style="padding: 12px 14px; text-align: left;">旧版实现</th>
+    <th style="border-radius: 0px 8px 0px 0px; padding: 12px 14px; text-align: left;">实测问题</th>
+  </tr>
+  <tr style="background: rgb(255, 245, 245);"><td style="border-bottom: 1px solid rgb(254, 178, 178); padding: 11px 14px;"><b>协议支持</b></td><td style="border-bottom: 1px solid rgb(254, 178, 178); padding: 11px 14px;">仅 vless/vmess/trojan/ss 四协议</td><td style="border-bottom: 1px solid rgb(254, 178, 178); padding: 11px 14px;">Hysteria2/TUIC/AnyTLS <b>全部解析失败直接丢弃</b> —— 而这三类恰是近年新节点的主力</td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>存活判定</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><code style="background: rgb(237, 242, 247); border-radius: 4px; font-size: 13px; padding: 2px 6px;">sleep(0.35)</code> 固定等待 + 单次 6.5s 探测</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">慢启动节点 6.5 秒内没完成握手就被<b>误杀</b>；死节点又烧满 6.5 秒才放弃</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>断流/MITM 检测</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>完全没有</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">"连得上但带宽趋零"的断流节点、TLS 证书被劫持的中间人节点<b>照常入库</b></td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>国家归类</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">查<b>入口服务器 IP</b> 的归属地</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">中转/隧道节点的入口国 ≠ 出口国，归类<b>必然错误</b>，还制造出大量"其他地区"</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>家宽识别</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">硬编码 ASN 列表 + ISP 关键词</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">机房收购的老家宽 IP 段 rDNS 带 <code style="background: rgb(237, 242, 247); border-radius: 4px; font-size: 13px; padding: 2px 6px;">.dsl</code> 关键词 → <b>机房被当成家宽</b></td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>重复节点</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">不去重</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;">同一节点被 10+ 个订阅源重复收录，每个都测一遍，<b>CI 跑 40+ 分钟</b></td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="padding: 11px 14px;"><b>导出格式</b></td><td style="padding: 11px 14px;">原样转发上游 URI</td><td style="padding: 11px 14px;">实测 <b>262 个节点里 145 个（55%）</b>字段损坏 —— 客户端"解析失败"的元凶</td></tr>
+</tbody></table>
+</div>
+
+<div style="background: rgb(255, 250, 240); border-left: 4px solid rgb(237, 137, 54); border-radius: 8px; color: #2d3748; font-size: 16px; margin: 20px 0px; padding: 16px 20px;">
+  <b>💡 最意外的发现：</b>导出环节。我写了一个"保真度回归测试"（URI → 解析 → 测活 → 导出 → 再解析 → 逐字段对比），结果 55% 的节点在导出后丢了参数 —— trojan 的 WebSocket path/host、vless 的 0-RTT/指纹/h2 host、vmess 的 grpc serviceName 全部静默丢失。这些节点测活时是活的，到了用户手里就是死的。
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 二、新版架构 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">二、新版架构全景</h2>
+
+<p style="color: #2d3748; font-size: 16px;">新引擎换成 <b>sing-box v1.14.0</b>（官方最新版），每个节点起独立进程 + 临时 SOCKS 入站，走完整代理隧道做真实请求。核心链路变成：</p>
+
+<div style="background: rgb(26, 32, 44); border-radius: 14px; color: #e2e8f0; font-family: &quot;Cascadia Code&quot;, Consolas, monospace; font-size: 13.5px; margin: 22px 0px; overflow-x: auto; padding: 26px;">
+<div style="line-height: 2.1;">
+<span style="color: #63b3ed;">抓取订阅源</span> <span style="color: #718096;">──→</span> <span style="color: #f6ad55;">解析校验</span> <span style="color: #718096;">──→</span> <span style="color: #f6e05b;">★测前去重</span> <span style="color: #718096;">──→</span> <span style="color: #68d391;">sing-box 真隧道测活</span><br />
+<span style="color: #718096;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│</span><br />
+<span style="color: #718096;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─</span> <span style="color: #68d391;">check 预校验</span> <span style="color: #718096;">→</span> <span style="color: #68d391;">分层探测</span> <span style="color: #718096;">(首探12s/重试4s)</span> <span style="color: #718096;">→</span> <span style="color: #68d391;">真实出口IP</span><br />
+<span style="color: #718096;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─</span> <span style="color: #f687b3;">断流检测</span> <span style="color: #718096;">(70KB/s 阈值)</span> <span style="color: #718096;">+&nbsp;</span> <span style="color: #f687b3;">MITM 证书校验</span><br />
+<span style="color: #718096;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─</span> <span style="color: #b794f4;">六信号家宽识别</span> <span style="color: #718096;">→&nbsp;</span><span style="color: #b794f4;">★链式双跳复测</span><br />
+<span style="color: #718096;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─</span> <span style="color: #4fd1c5;">★roundtrip 保真导出</span> <span style="color: #718096;">→ 三格式 + 分国家 + 家宽专区 + CDN 缓存刷新</span>
+</div>
+</div>
+
+<p style="color: #718096; font-size: 14px;">标 ★ 的环节为全新增加。下面逐项对比数据。</p>
+
+<span style="color: #2d3748;"><!--═══════════ 三、有效性检测 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">三、节点有效性检测：从"单次盲测"到"五重裁决"</h2>
+
+<div style="color: #2d3748; display: grid; font-size: 16px; gap: 16px; grid-template-columns: 1fr 1fr; margin: 20px 0px;">
+  <div style="background: rgb(255, 245, 245); border-radius: 12px; border: 1px solid rgb(254, 215, 215); padding: 18px 20px;">
+    <div style="color: #c53030; font-size: 16px; font-weight: 700; margin-bottom: 8px;">✕ 旧版判定方式</div>
+    <div style="font-size: 14.5px;">固定 <code style="background: rgb(237, 242, 247); border-radius: 4px; padding: 2px 6px;">sleep(0.35)</code> 等进程起来，单次 6.5s 请求 generate_204，通了就算活。一个探测点、一次机会、一种视角。</div>
+  </div>
+  <div style="background: rgb(240, 255, 244); border-radius: 12px; border: 1px solid rgb(198, 246, 213); padding: 18px 20px;">
+    <div style="color: #276749; font-size: 16px; font-weight: 700; margin-bottom: 8px;">✓ 新版判定方式</div>
+    <div style="font-size: 14.5px;">SOCKS 端口<b>主动轮询就绪</b>（替代盲等）→ 首探 <b>12s</b> 容慢启动 + 多探测点重试（各 4s）→ 断流检测（5MB 限时下载，&lt;70KB/s 判死）→ MITM 证书校验 → 链式双跳复测。</div>
+  </div>
+</div>
+
+<div style="color: #2d3748; font-size: 16px; overflow-x: auto;">
+<table style="border-collapse: collapse; font-size: 14.5px; margin: 18px 0px; width: 100%;">
+  <tbody><tr style="background: rgb(45, 55, 72); color: white;">
+    <th style="padding: 12px 14px; text-align: left;">指标</th>
+    <th style="padding: 12px 14px;">旧版</th>
+    <th style="padding: 12px 14px;">新版</th>
+    <th style="padding: 12px 14px;">提升</th>
+  </tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>协议覆盖率</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #e53e3e; font-weight: 700;">4/8（50%）</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #38a169; font-weight: 700;">8/8（100%）</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">hy2/tuic/anytls 从<b>全部丢失</b>到全支持</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>慢节点误杀率</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #e53e3e; font-weight: 700;">常见（6.5s 硬限）</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #38a169; font-weight: 700;">≈0（12s 首探+多端点）</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">慢启动节点不再被冤杀</td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>断流节点拦截</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #e53e3e; font-weight: 700;">0（无此检测）</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #38a169; font-weight: 700;">实测单轮拦截 188 个</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">"连得上但没带宽"的节点绝不再入库</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>MITM 劫持拦截</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #e53e3e; font-weight: 700;">0（无此检测）</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><span style="color: #38a169; font-weight: 700;">实测单轮拦截 36 个</span></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">证书被劫持的高危节点直接剔除</td></tr>
+  <tr><td style="padding: 11px 14px;"><b>链式代理可用性</b></td><td style="padding: 11px 14px; text-align: center;"><span style="color: #e53e3e; font-weight: 700;">不检测（实测约 50%）</span></td><td style="padding: 11px 14px; text-align: center;"><span style="color: #38a169; font-weight: 700;">双跳复测（7 候选筛掉 1）</span></td><td style="padding: 11px 14px; text-align: center;">家宽区节点全部经过链式验证</td></tr>
+</tbody></table>
+</div>
+
+<div style="background: rgb(255, 250, 240); border-left: 4px solid rgb(237, 137, 54); border-radius: 8px; color: #2d3748; font-size: 16px; margin: 20px 0px; padding: 16px 20px;">
+  <b>🔗 关于"链式双跳复测"（本版核心创新）：</b>很多用户像我一样在 v2rayN 里开<b>前置代理（链式代理）</b>用节点。实测发现"单跳测活通过"不等于"套上前置还能用"—— 部分服务端拒绝"已被代理的流量"再入站。新版在测活后，用<b>当轮延迟最低的存活节点做前置</b>，把家宽候选全部双跳复测一遍（前置 → 家宽节点 → 204），双跳失败的降级到普通区。这精确模拟了真实链式使用场景。
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 四、国家归类 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">四、国家归类：从"看门牌"到"看落地"</h2>
+
+<p style="color: #2d3748; font-size: 16px;">旧版查<b>入口服务器 IP</b> 的归属地 —— 这就像看"你要进的那扇门在哪个小区"来判断你到了哪个国家。但中转/隧道节点的入口和出口根本不在一个国家，归类必然错误。</p>
+
+<p style="color: #2d3748; font-size: 16px;">新版改为在<b>节点隧道内部</b>请求 IP 识别服务，拿到<b>真实出口 IP</b> 再归类 —— 你从节点出来落地在哪，就归哪个国家。三级兜底：在线识别（ip.sb/ipinfo/ip-api 三源）→ MaxMind 离线库 → 入口 IP 回退（仅当出口是云内网地址查不到时）。</p>
+
+<div style="color: #2d3748; display: grid; font-size: 16px; gap: 16px; grid-template-columns: 1fr 1fr; margin: 20px 0px;">
+  <div style="background: rgb(255, 245, 245); border-radius: 12px; border: 1px solid rgb(254, 215, 215); padding: 18px 20px;">
+    <div style="color: #c53030; font-size: 16px; font-weight: 700; margin-bottom: 10px;">✕ 旧版归类误差来源</div>
+    <ul style="font-size: 14.5px; margin: 0px; padding-left: 20px;">
+      <li>中转节点：入口国 ≠ 出口国 → <b>100% 归错</b></li>
+      <li>套 WARP 的节点：出口被 Cloudflare 掩盖</li>
+      <li>查不到就丢进"其他地区"（实测一轮 40KB 的 OTHER 文件）</li>
+    </ul>
+  </div>
+  <div style="background: rgb(240, 255, 244); border-radius: 12px; border: 1px solid rgb(198, 246, 213); padding: 18px 20px;">
+    <div style="color: #276749; font-size: 16px; font-weight: 700; margin-bottom: 10px;">✓ 新版归类精度</div>
+    <ul style="font-size: 14.5px; margin: 0px; padding-left: 20px;">
+      <li>出口 IP 直查：<b>中转节点归类正确率从 0 → 100%</b></li>
+      <li>WARP 套壳检测：trace 里 warp=on 的节点单独标记</li>
+      <li>"其他地区"只保留真正无法定位的节点，命名统一<b>国旗+中文国名+英文缩写</b></li>
+    </ul>
+  </div>
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 五、家宽识别 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">五、家宽识别：四道闸门，专打"伪装家宽"</h2>
+
+<p style="color: #2d3748; font-size: 16px;">这是整个重构里最有意思的部分。免费池里标榜"家宽/住宅 IP"的节点，<b>大多数是伪装的</b>。最典型的伪装手法：机房收购倒闭运营商的 legacy 家宽 IP 段 —— IP 数据库里它还显示为宽带运营商，rDNS 还带 <code style="background: rgb(237, 242, 247); border-radius: 4px; font-size: 13px; padding: 2px 6px;">.dsl / .pppoe</code> 后缀， ASN 却早已转手给云商。</p>
+
+<h3 style="color: #2c5282; font-size: 19px; margin-top: 26px;">真实案例：一个骗过了旧版的"美国家宽"</h3>
+
+<div style="background: rgb(26, 32, 44); border-radius: 12px; color: #cbd5e0; font-size: 14px; margin: 16px 0px; padding: 22px 24px;">
+<div style="line-height: 2;">
+<span style="color: #fc8181;">节点名称：</span>🇺🇸 美国 02 (家宽)<br />
+<span style="color: #fc8181;">出口 IP：</span>66.93.128.123<br />
+<span style="color: #f6ad55;">rDNS：</span>dsl093-128-123.sfo4.dsl.speakeasy.net <span style="color: #718096;">← 看起来是 DSL 家宽</span><br />
+<span style="color: #f6ad55;">ASN：</span>AS62610 Zenlayer Inc <span style="color: #718096;">← 实际是云边网络商</span><br />
+<span style="color: #f6ad55;">ip-api 判定：</span>hosting=<b style="color: #f6e05b;">false</b>，proxy=<b style="color: #f6e05b;">true</b>（代理/VPN 出口标志）<br />
+<span style="color: #f6ad55;">ipapi.is：</span>company = "Bunny Communications"（CDN 公司！）<br />
+<span style="color: #f6ad55;">ping 测试：</span>落地荷兰阿姆斯特丹 <span style="color: #718096;">← 和"美国家宽"毫无关系</span><br />
+<br />
+<span style="color: #68d391;">▸ 旧版判定：residential（被 rDNS 的 "dsl" 关键词骗了）</span><br />
+<span style="color: #68d391;">▸ 新版判定：四道闸门全部否决，降级为普通机房节点</span>
+</div>
+</div>
+
+<h3 style="color: #2c5282; font-size: 19px; margin-top: 26px;">新版四道闸门</h3>
+
+<div style="color: #2d3748; display: grid; font-size: 16px; gap: 12px; margin: 16px 0px;">
+  <div style="background: rgb(247, 250, 252); border-radius: 10px; border: 1px solid rgb(226, 232, 240); display: flex; gap: 14px; padding: 14px 18px;">
+    <div style="align-items: center; background: rgb(66, 153, 225); border-radius: 8px; color: white; display: flex; font-size: 16px; font-weight: 700; height: 34px; justify-content: center; min-width: 34px;">1</div>
+    <div><b>ip-api 在线字段硬判</b>：hosting=true → 机房；<b>proxy=true → 硬否决家宽</b>（本案例的关键 —— 旧版根本没检查 proxy 字段）。实测该字段对"机房收购家宽段"的伪装识别率极高。</div>
+  </div>
+  <div style="background: rgb(247, 250, 252); border-radius: 10px; border: 1px solid rgb(226, 232, 240); display: flex; gap: 14px; padding: 14px 18px;">
+    <div style="align-items: center; background: rgb(72, 187, 120); border-radius: 8px; color: white; display: flex; font-size: 16px; font-weight: 700; height: 34px; justify-content: center; min-width: 34px;">2</div>
+    <div><b>ASN 黑白名单</b>：60+ 主流云商 ASN 黑名单（含实测漏网的 Zenlayer AS62610 等 12 个云边网络）+ 300+ 各国主流民用宽带运营商 ASN 白名单。</div>
+  </div>
+  <div style="background: rgb(247, 250, 252); border-radius: 10px; border: 1px solid rgb(226, 232, 240); display: flex; gap: 14px; padding: 14px 18px;">
+    <div style="align-items: center; background: rgb(159, 122, 234); border-radius: 8px; color: white; display: flex; font-size: 16px; font-weight: 700; height: 34px; justify-content: center; min-width: 34px;">3</div>
+    <div><b>ipapi.is 交叉源否决</b>：独立数据源二次核验，company/ASN 里含云商关键词（Bunny/Zenlayer/Cloudflare/GCore 等 20+ 个）直接否决。防止单一数据源被"洗白"。</div>
+  </div>
+  <div style="background: rgb(247, 250, 252); border-radius: 10px; border: 1px solid rgb(226, 232, 240); display: flex; gap: 14px; padding: 14px 18px;">
+    <div style="align-items: center; background: rgb(237, 137, 54); border-radius: 8px; color: white; display: flex; font-size: 16px; font-weight: 700; height: 34px; justify-content: center; min-width: 34px;">4</div>
+    <div><b>Scamalytics 欺诈分 + 链式双跳复测</b>：欺诈分 ≥75 降级出普通区、≥90 整体剔除（fraud 池滥用 IP）；家宽候选最后过链式双跳复测。宁缺毋滥。</div>
+  </div>
+</div>
+
+<p style="color: #2d3748; font-size: 16px;">四道闸门过完，<b>家宽专区里每个节点都同时满足</b>：真住宅 IP（四源验证）+ 无欺诈记录 + 链式场景实测可用。代价是数量少了 —— 免费池里真家宽本来就是稀缺资源，但留下来的每一个都是真金。旧版那种"8 个家宽里 1 个是荷兰机房"的情况不会再有。</p>
+
+<span style="color: #2d3748;"><!--═══════════ 六、导出保真 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">六、导出保真：最隐蔽的 55% 损坏率是怎么修的</h2>
+
+<p style="color: #2d3748; font-size: 16px;">测活再准，导出时把参数弄丢，用户手里还是死节点。旧版实测 <b>262 个节点里 145 个（55%）</b>导出后字段损坏。新版的做法是在 CI 里内置"保真度回归"：每轮导出后，抽样把 URI 再解析回来和原始字段逐项对比，任何丢失直接在流水线内拦截。</p>
+
+<div style="color: #2d3748; font-size: 16px; overflow-x: auto;">
+<table style="border-collapse: collapse; font-size: 14px; margin: 18px 0px; width: 100%;">
+  <tbody><tr style="background: rgb(45, 55, 72); color: white;">
+    <th style="padding: 10px 14px; text-align: left;">典型损坏（旧版）</th>
+    <th style="padding: 10px 14px; text-align: left;">后果</th>
+  </tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">trojan 导出丢 ws 的 path/host</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">trojan-ws 节点 100% 不可用</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">ss 导出砍掉 base64 padding（<code style="background: rgb(237, 242, 247); border-radius: 3px; padding: 1px 5px;">rstrip("=")</code>）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">v2rayN 直接"解析失败"（韩国家宽节点事件的元凶）</td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">hy2 密码含 <code style="background: rgb(237, 242, 247); border-radius: 3px; padding: 1px 5px;">://</code> 时正则断裂</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">整个节点被丢弃</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">vless 导出丢 0-RTT/alpn/指纹/h2 host</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;">复杂传输节点大面积不可用</td></tr>
+  <tr><td style="padding: 10px 14px;">vmess grpc 的 serviceName 不写入</td><td style="padding: 10px 14px;">grpc 节点全部废掉</td></tr>
+</tbody></table>
+</div>
+
+<div style="background: rgb(240, 255, 244); border-radius: 10px; border: 1px solid rgb(198, 246, 213); color: #2d3748; font-size: 16px; margin: 18px 0px; padding: 16px 20px;">
+  <b style="color: #276749;">修复后实测：</b>24/24 样本（19 标准 + 5 边界样本）roundtrip <b>零字段丢失</b>；真实节点端到端复测导出 URI 5/5 无损。损坏率 55% → <b>0%</b>。
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 七、速度 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">七、速度：40 分钟 → 8.4 分钟</h2>
+
+<div style="color: #2d3748; font-size: 16px; overflow-x: auto;">
+<table style="border-collapse: collapse; font-size: 14.5px; margin: 18px 0px; width: 100%;">
+  <tbody><tr style="background: rgb(45, 55, 72); color: white;">
+    <th style="padding: 12px 14px; text-align: left;">指标</th>
+    <th style="padding: 12px 14px;">旧版</th>
+    <th style="padding: 12px 14px;">新版</th>
+    <th style="padding: 12px 14px;">变化</th>
+  </tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>单轮 CI 总耗时</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">40+ 分钟</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;"><b style="color: #38a169;">502 秒</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #38a169; font-weight: 700; padding: 11px 14px; text-align: center;">↓ 约 80%</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>实测节点数</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">4811 全量（大量重复）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">2787（凭据指纹去重）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #38a169; font-weight: 700; padding: 11px 14px; text-align: center;">↓ 42%</td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px;"><b>测活并发</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">24</td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 11px 14px; text-align: center;">48</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #38a169; font-weight: 700; padding: 11px 14px; text-align: center;">×2</td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="padding: 11px 14px;"><b>死节点耗时</b></td><td style="padding: 11px 14px; text-align: center;">6.5s × 3 次重试烧满</td><td style="padding: 11px 14px; text-align: center;">首探 12s / 重试 4s 分层</td><td style="color: #38a169; font-weight: 700; padding: 11px 14px; text-align: center;">快慢两不误</td></tr>
+</tbody></table>
+</div>
+
+<p style="color: #2d3748; font-size: 16px;"><b>测前去重</b>是提速关键：同一节点被多源重复收录时（免费池常态，最多见 30+ 份"不同名字"的同款节点），按<b>服务器+端口+协议+凭据指纹</b>只测一次，其余克隆继承测活结果。同凭据+同目标的服务端行为必然一致，这是数学不是赌运气。</p>
+
+<span style="color: #2d3748;"><!--═══════════ 八、特殊情况 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">八、特殊情况合集：那些"检测网站互相打架"的坑</h2>
+
+<p style="color: #2d3748; font-size: 16px;">重构过程中遇到的几个非典型问题，单独列出来 —— 如果你也在做类似的池子或纠结节点质量，这些坑大概率会撞上。</p>
+
+<h3 style="color: #c05621; font-size: 19px; margin-top: 28px;">坑 1：ping0.cc 说"高风险"，Scamalytics 却打 2 分 —— 听谁的？</h3>
+<div style="background: rgb(255, 251, 240); border-radius: 10px; border: 1px solid rgb(251, 211, 141); color: #2d3748; font-size: 15px; margin: 14px 0px; padding: 18px 22px;">
+<p>实测一个 GCP 台湾机房的节点：我们管道的 Scamalytics 欺诈分只有 <b>2/100</b>（极低危），正常入库；用户拿到后在 ping0.cc 一查，显示"高风险"。两个网站对<b>同一个 IP</b> 给出完全相反的结论。</p>
+<p><b>原因：</b>不同厂商用不同的风控数据库和评分模型。机房 IP（尤其 GCP/AWS/Azure 这种大厂段）在免费代理池里被滥用得极其严重，在一些厂商的库里早就是"惯犯画像"；在另一些厂商的库里则只看实时行为评分。<b>结论：</b>单一检测网站的判定不能当真理，交叉验证才有意义。这也是家宽识别为什么要用四道闸门而不是单一数据源。</p>
+</div>
+
+<h3 style="color: #c05621; font-size: 19px; margin-top: 28px;">坑 2：ping 显示荷兰、IP 网站显示美国 —— 节点到底在哪国？</h3>
+<div style="background: rgb(255, 251, 240); border-radius: 10px; border: 1px solid rgb(251, 211, 141); color: #2d3748; font-size: 15px; margin: 14px 0px; padding: 18px 22px;">
+<p>还是上面那个 Zenlayer 节点：Windows ping 显示落地荷兰北荷兰省阿姆斯特丹，另一个 IP 查询网站显示美国，两个网站显示的 IP 地址却完全相同。</p>
+<p><b>原因：</b>这类云边网络用 anycast 或收购多国 IP 段，不同地理库的登记滞后且互相打架。<b>解法：</b>多家交叉 —— 我最终接入了 ipapi.is 作为仲裁源之一（它正确给出了 Bunny Communications/Zenlayer 的公司归属），国家归类以<b>出口实测</b>为准而不是任何单一网站的库。</p>
+</div>
+
+<h3 style="color: #c05621; font-size: 19px; margin-top: 28px;">坑 3：CDN 订阅比 RAW 订阅少节点 —— 不是 bug 是缓存</h3>
+<div style="background: rgb(255, 251, 240); border-radius: 10px; border: 1px solid rgb(251, 211, 141); color: #2d3748; font-size: 15px; margin: 14px 0px; padding: 18px 22px;">
+<p>用户反馈：台湾家宽订阅走 CDN 链接只更新出 2 个节点，RAW 链接却有 4 个。第一反应以为是导出 bug，排查后发现两个文件内容完全一致 —— 是 <b>jsDelivr CDN 边缘节点缓存滞后</b>，拿到的是几小时前的旧文件。</p>
+<p><b>解法：</b>CI 每轮跑完调用 <code style="background: rgb(237, 242, 247); border-radius: 4px; font-size: 13px; padding: 2px 6px;">purge.jsdelivr.net</code> 主动刷新全部订阅文件的 CDN 缓存。实测刷新后 CDN 立即与 RAW 一致。做订阅池的记住这条：**内容对但 CDN 旧，用户永远先怀疑你**。</p>
+</div>
+
+<h3 style="color: #c05621; font-size: 19px; margin-top: 28px;">坑 4：Hysteria2 节点开前置代理基本不能用 —— 架构性限制</h3>
+<div style="background: rgb(255, 251, 240); border-radius: 10px; border: 1px solid rgb(251, 211, 141); color: #2d3748; font-size: 15px; margin: 14px 0px; padding: 18px 22px;">
+<p>用户在 v2rayN 里开链式前置后，hy2 节点几乎全军覆没，一度怀疑测活有问题。</p>
+<p><b>原因：</b>Hysteria2 基于 QUIC/UDP，而 SOCKS5 前置链对 UDP-over-TCP 的转发支持天然残缺 —— 这不是节点死了，是<b>协议形态不适合套链</b>。直连或单层使用时这些节点完全正常（测活数据可以证明）。<b>启示：</b>按使用场景分流 —— 链式用户少碰 hy2，追求低延迟直连用户优选 hy2。</p>
+</div>
+
+<h3 style="color: #c05621; font-size: 19px; margin-top: 28px;">坑 5：CI 在海外跑，用户在国内用 —— 视角差异是物理鸿沟</h3>
+<div style="background: rgb(255, 251, 240); border-radius: 10px; border: 1px solid rgb(251, 211, 141); color: #2d3748; font-size: 15px; margin: 14px 0px; padding: 18px 22px;">
+<p>有人问：CI（GitHub Actions，美国 Azure 出口）测活通过率挺高，为什么我国内不开前置只有 10% 能用？是不是把国内能用的都排除了？</p>
+<p><b>实测结论：</b>对 1364 个去重节点逐一查入口归属 —— <b>0 个</b>入口在中国大陆。免费池节点全部是海外入口，不存在"国内中转被误杀"的形态；差异纯粹来自 GFW 对链路的干扰（IP 封锁/SNI 阻断/协议指纹识别），这是<b>物理位置决定的视角差异</b>，任何海外 CI 都测不到"从中国直连是否被墙"。要测这个视角只有两条路：国内机器定时复测，或国内服务器做测活前置。目前的选择是如实标注视角：CI 订阅 = 海外视角可用性，链式/前置场景用户用双跳复测过的家宽专区。</p>
+</div>
+
+<span style="color: #2d3748;"><!--═══════════ 总结 ═══════════--></span>
+<h2 style="border-bottom: 3px solid rgb(226, 232, 240); color: #2d3748; font-size: 24px; margin-top: 38px; padding-bottom: 10px;">总结：一张表看完全部升级</h2>
+
+<div style="color: #2d3748; font-size: 16px; overflow-x: auto;">
+<table style="border-collapse: collapse; font-size: 14px; margin: 18px 0px; width: 100%;">
+  <tbody><tr style="background: rgb(45, 55, 72); color: white;">
+    <th style="padding: 12px 14px; text-align: left;">维度</th>
+    <th style="padding: 12px 14px;">旧版</th>
+    <th style="padding: 12px 14px;">新版</th>
+  </tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>测活引擎</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px; text-align: center;">Xray-core 1.8.24（停更）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>sing-box v1.14.0（全协议）</b></td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>协议覆盖</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">4 协议（50%）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>8 协议（100%）</b></td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>导出损坏率</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">55%（145/262）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>0%（roundtrip 拦截）</b></td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>断流 + MITM 拦截</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">无</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>实测一轮拦 188 + 36 个</b></td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>国家归类</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">入口 IP（中转必错）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>真实出口 IP + 三级兜底</b></td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>家宽识别</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">ASN+关键词（会被伪装骗）</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>四道闸门 + 链式双跳复测</b></td></tr>
+  <tr><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>重复测试浪费</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">全量重复测</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>凭据指纹去重 −42%</b></td></tr>
+  <tr style="background: rgb(247, 250, 252);"><td style="border-bottom: 1px solid rgb(226, 232, 240); padding: 10px 14px;"><b>单轮 CI 耗时</b></td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #c53030; padding: 10px 14px; text-align: center;">40+ 分钟</td><td style="border-bottom: 1px solid rgb(226, 232, 240); color: #276749; padding: 10px 14px; text-align: center;"><b>502 秒（↓80%）</b></td></tr>
+  <tr><td style="padding: 10px 14px;"><b>CDN 分发一致性</b></td><td style="color: #c53030; padding: 10px 14px; text-align: center;">缓存滞后（CDN≠RAW）</td><td style="color: #276749; padding: 10px 14px; text-align: center;"><b>每轮主动 purge</b></td></tr>
+</tbody></table>
+</div>
+
+<div style="background: linear-gradient(135deg, rgb(44, 82, 130), rgb(74, 85, 104)); border-radius: 14px; color: #e2e8f0; font-size: 16px; margin: 30px 0px; padding: 28px 30px;">
+  <div style="color: white; font-size: 20px; font-weight: 700; margin-bottom: 12px;">写在最后</div>
+  <p style="font-size: 15px; margin: 0px 0px 12px;">免费节点池的本质矛盾：你永远无法让"免费、公开、稳定"三者同时成立 —— 节点本身会死、会被滥用、会被墙，这是池子的宿命。但工程能保证的是：<b>测活环节不冤枉活节点、不放进来死节点，识别环节不打错标签，导出环节不丢参数，交付环节不缓存旧文件。</b>这四件事做到位，"看着能用"就变成了"真的能用"。</p>
+  <p style="font-size: 15px; margin: 0px;">如果你也想搭一个这样的池子，或者对某个细节的实现感兴趣，欢迎留言交流。全部流水线代码和每轮实测日志都在仓库里，透明可审计。</p>
+</div>
+
+<span style="color: #2d3748;"><!--标签区--></span>
+<div style="color: #2d3748; display: flex; flex-wrap: wrap; font-size: 16px; gap: 10px; margin-top: 26px;">
+  <span style="background: rgb(226, 232, 240); border-radius: 999px; color: #4a5568; font-size: 13px; padding: 6px 16px;">#代理节点</span>
+  <span style="background: rgb(226, 232, 240); border-radius: 999px; color: #4a5568; font-size: 13px; padding: 6px 16px;">#sing-box</span>
+  <span style="background: rgb(226, 232, 240); border-radius: 999px; color: #4a5568; font-size: 13px; padding: 6px 16px;">#自动化CI</span>
+  <span style="background: rgb(226, 232, 240); border-radius: 999px; color: #4a5568; font-size: 13px; padding: 6px 16px;">#家宽识别</span>
+  <span style="background: rgb(226, 232, 240); border-radius: 999px; color: #4a5568; font-size: 13px; padding: 6px 16px;">#GitHub Actions</span>
+  <span style="background: rgb(226, 232, 240); border-radius: 999px; color: #4a5568; font-size: 13px; padding: 6px 16px;">#IP风控</span>
+</div>
+
+</div>
+</div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>

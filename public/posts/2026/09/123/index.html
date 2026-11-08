@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>永久免费无限流量家宽住宅IP无需VPS，cloudflare 一键部署edgetunnel,SSTP链式代理支持clash/v2rayn订阅 · 晓鹤的博客</title>
+<meta name="description" content=" 
+
+     
+           第一步：部署 Cloudflare Worker Check 项目 
+   
+    首先需要部署一个低延迟的边缘检测端，用于辅助节点测速和连通性验证。
+   
+  
+   
+      Cloudf">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">永久免费无限流量家宽住宅IP无需VPS，cloudflare 一键部署edgetunnel,SSTP链式代理支持clash/v2rayn订阅</h1>
+  <div class="meta"><time>2026-09-30</time></div>
+  <div class="content"><div class="blogger-tutorial-article" style="line-height: 1.8; margin: 0px auto; max-width: 860px;">
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--第一步--></span>
+  <div class="separator" style="clear: both; text-align: center;"><a href="assets/img/2e481aba40a8.jpg" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1536" data-original-width="2752" src="assets/img/2e481aba40a8.jpg" /></a></div><div class="separator" style="clear: both; text-align: center;"><br /></div><h2 style="border-bottom: 2px solid rgb(226, 232, 240); color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin-top: 20px; padding-bottom: 8px;">第一步：部署 Cloudflare Worker Check 项目</h2>
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">
+    首先需要部署一个低延迟的边缘检测端，用于辅助节点测速和连通性验证。
+  </p>
+  
+  <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin: 12px 0px; padding: 12px 16px;">
+    <h3 style="text-align: left;"><strong style="color: #1e293b;">Cloudflare Worker 脚本代码下载地址：</strong><span style="font-weight: normal;"> <code><span style="color: red;">[<a href="https://raw.githubusercontent.com/lsh8848/cm-Workers-CheckSocks5/refs/heads/main/_worker.js" target="_blank">点此跳转</a>]</span></code></span></h3>
+  </div>
+
+  <ol style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li>前往并打开上方占位符中的 Worker 脚本代码链接，将代码全部复制备用。</li>
+    <li>登录你的 <strong>Cloudflare 控制台</strong>。</li>
+    <li>在左侧导航进入 <strong>Workers 和 Pages</strong> ➔ 点击 <strong>创建应用程序</strong> ➔ 选择 <strong>创建 Worker</strong>。</li>
+    <li>为 Worker 命名后点击右下角 <strong>部署</strong>。</li>
+    <li>部署完成后点击 <strong>编辑代码</strong>，清空原有代码，将第 1 步复制的代码粘贴进去，点击右上角 <strong>部署</strong> 保存。</li>
+    <li>
+      <strong>记下生成的测速域名：</strong>在 Worker 详情页记下分配的默认域名（例如 <code>xxxx.xxxx.workers.dev</code>），或者在 <em>设置 ➔ 触发器</em> 中绑定的<strong>自定义域名</strong>。该域名在后续步骤中将作为 <code>Worker 检测域名</code> 填入代码。
+    </li>
+  </ol>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--第二步--></span>
+  <h2 style="border-bottom: 2px solid rgb(226, 232, 240); color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin-top: 36px; padding-bottom: 8px;">第二步：新建 GitHub 仓库与上传代码</h2>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">1. 新建 GitHub 仓库</h3>
+  <ol style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li>登录 GitHub，点击右上角 <strong>+</strong> ➔ <strong>New repository</strong>。</li>
+    <li>仓库名称自定义（例如 <code>gate</code>）。</li>
+    <li>仓库类型必须选择 <strong>Public（公开）</strong>。</li>
+    <li>勾选 <strong>Add a README file</strong>，点击 <strong>Create repository</strong> 创建完成。</li>
+  </ol>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">2. 源码下载与普通文件上传</h3>
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">
+    请前往以下预设的代码文件下载地址获取基础代码文件：
+  </p>
+  <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin: 12px 0px; padding: 14px 18px;">
+    <h4 style="text-align: left;"><strong style="color: #1e293b;">代码文件 下载地址1：</strong> <code><span style="color: red; font-weight: normal;">[<a href="https://pan.xunlei.com/s/VP2pJfIQ5q9Db88hOf7c3bxjA1?pwd=9irw" target="_blank">点此跳转</a>]</span></code></h4>
+    <div style="margin-top: 8px;"><strong style="color: #1e293b;">代码文件 下载地址2：</strong> <code><span style="color: red;"><b>[<a href="https://pan.quark.cn/s/49e2988aa42d" target="_blank">点此跳转</a>]</b></span></code></div>
+  </div>
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">
+    下载完成后，在你的 GitHub 仓库主页点击 <strong>Add file ➔ Upload files</strong>，将对应的核心运行脚本（如 <code>vpngate.py</code>、<code>requirements.txt</code>）以及 <code>web/</code> 静态模板文件上传并点击 <strong>Commit changes</strong> 保存。
+  </p>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">3. 手动创建无法直接上传的工作流文件（必做）</h3>
+  <div style="background: rgb(255, 251, 235); border-color: rgb(254, 243, 199) rgb(254, 243, 199) rgb(254, 243, 199) rgb(245, 158, 11); border-left: 4px solid #f59e0b; border-radius: 6px; border-style: solid; border-width: 1px 1px 1px 4px; color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin: 12px 0px; padding: 14px 16px;">
+    <strong style="color: #92400e;">⚠️ 注意事项：</strong>
+    <span style="color: #b45309; font-size: 14px;">
+      GitHub 网页端不支持直接拖拽上传带点开头的路径（<code>.github/</code>），因此必须通过网页端新建文件并手动录入路径。
+    </span>
+  </div>
+
+  <ol style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li style="color: #1e293b;">在仓库根目录点击 <strong>Add file ➔ Create new file</strong>。</li>
+    <li style="color: #1e293b;">在文件名输入框中输入路径及文件名：<code><b style="background-color: #fcff01;">.gitignore</b></code>。</li>
+    <li style="color: #1e293b;">在下方代码编辑框中，<strong>完整粘贴以下忽略规则代码</strong>：</li>
+  </ol>
+
+  <pre style="background: rgb(30, 41, 59); border-radius: 8px; color: #f8fafc; font-family: monospace; font-size: 13px; line-height: 1.5; overflow-x: auto; padding: 16px;"># 由 vpngate.py 运行时生成 (data.json + index.html), 不入库
+public/
+__pycache__/
+*.pyc</pre>
+
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">粘贴完成后，点击页面最下方的 <strong>Commit changes</strong> 保存文件。</p>
+
+  <ol style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li>在仓库根目录再次点击 <strong>Add file ➔ Create new file</strong>。</li>
+    <li>在文件名输入框中输入路径及文件名：<code style="background-color: #fcff01;"><b>.github/workflows/check.yml</b></code>（每输入一个斜杠 <code>/</code> 系统会自动生成目录结构）。</li>
+    <li>在下方代码编辑框中，<strong>完整粘贴仓库原版的工作流配置代码</strong>：</li>
+  </ol>
+
+  <pre style="background: rgb(30, 41, 59); border-radius: 8px; color: #f8fafc; font-family: monospace; font-size: 13px; line-height: 1.5; overflow-x: auto; padding: 16px;">name: VPN Gate Node Check
+
+on:
+  # 定时检测: 默认每 30 分钟一次。改成每 60 分钟: cron: "0 * * * *"
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: gate-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Get VPN Gate nodes + check via Cloudflare Worker + build page
+        run: python vpngate.py
+        env:
+          # 已部署的检测 Worker (不要改动: 检测统一走这里)
+          CHECK_WORKER: "https://check.helei.kdns.fr/check?sstp=vpn:vpn@"
+          CHECK_CONCURRENCY: "32"
+          CHECK_TIMEOUT: "90"
+
+      - name: Ensure GitHub Pages is enabled (one-time auto setup)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/pages")
+          echo "Pages API status: $code"
+          if [ "$code" = "404" ]; then
+            echo "首次运行: 启用 GitHub Pages (source = GitHub Actions, 目录 /public)"
+            curl -sS -X PUT \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"build_type":"workflow","source":{"branches":["main"],"path":"/public"}}' \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/pages"
+            echo
+            sleep 10
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Show site URL
+        run: 'echo "site: https://jerylihub.github.io/gate/ (deploy outcome: ${{ steps.deployment.outcome }})"'</pre>
+
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">粘贴完成后，点击页面最下方的 <strong>Commit changes</strong> 保存文件。</p>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--第三步--></span>
+  <h2 style="border-bottom: 2px solid rgb(226, 232, 240); color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin-top: 36px; padding-bottom: 8px;">三、步骤三：GitHub Actions 权限与 Pages 静态托管设置</h2>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">1. 开启 Actions 读写权限</h3>
+  <ol style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li>点击仓库顶部的 <strong>Settings</strong>。</li>
+    <li>在左侧菜单点击 <strong>Actions ➔ General</strong>。</li>
+    <li>向下滑动找到 <strong>Workflow permissions</strong> 区域，将选项勾选为：<br />
+      👉 <strong>Read and write permissions</strong>。
+    </li>
+    <li>点击 <strong>Save</strong> 保存设置。</li>
+  </ol>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">2. 设置 GitHub Pages 静态站点</h3>
+  <ol style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li>在仓库的 <strong>Settings</strong> 页面中，左侧点击 <strong>Pages</strong>。</li>
+    <li>在 <strong>Build and deployment</strong> 区域，确保 <strong>Source</strong> 选为 <em>github actions</em>。</li>
+  </ol>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--第四步--></span>
+  <h2 style="border-bottom: 2px solid rgb(226, 232, 240); color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin-top: 36px; padding-bottom: 8px;">四、步骤四：获取优选域名并修改核心代码配置</h2>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">1. 获取最新优选域名</h3>
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">打开优选域名提供网址，筛选出测速优异的 Cloudflare 优选 IP 或优选域名备用：</p>
+  <div style="background: rgb(248, 250, 252); border-radius: 6px; border: 1px solid rgb(203, 213, 225); font-family: monospace; font-size: 14px; margin: 10px 0px; padding: 12px 16px;">
+    <strong style="color: #1e293b;">优选域名提供网址：</strong> <code><b><span style="color: red;">[<a href="https://bestcf.fxxk.dedyn.io/">https://bestcf.fxxk.dedyn.io/</a>]</span></b></code>
+  </div>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">2. 在 <code>vpngate.py</code> 中修改三处核心配置</h3>
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">打开仓库根目录下的 <strong><code>vpngate.py</code></strong> 文件，点击右上角的 ✏️ 铅笔图标进行在线编辑，<strong>必须严格修改以下三处配置</strong>：</p>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--位置一--></span>
+  <div style="background: rgb(255, 255, 255); border-radius: 8px; border: 1px solid rgb(203, 213, 225); color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin: 16px 0px; padding: 16px;">
+    <strong style="color: #1e40af; font-size: 15px;">位置一：替换 Worker 测速检测端（文件第 52 ~ 55 行左右）</strong>
+    <p style="color: #475569; font-size: 14px; margin: 6px 0px;">
+      找到定义 <code>WORKER_CHECK_URL</code> 的代码行，将默认域名 <code>check.helei.kdns.fr</code> 替换为你第一步部署完成的 Cloudflare Worker 域名（保留前面的 <code>https://</code> 以及末尾的 <code>/check?sstp=vpn:vpn@</code>）：
+    </p>
+    <pre style="background: rgb(30, 41, 59); border-radius: 6px; color: #f8fafc; font-family: monospace; font-size: 13px; line-height: 1.5; overflow-x: auto; padding: 12px;"># 原代码第 52-55 行左右：
+WORKER_CHECK_URL = os.environ.get("CHECK_WORKER", "https://你的Worker域名/check?sstp=vpn:vpn@")</pre>
+  </div>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--位置二--></span>
+  <div style="background: rgb(255, 255, 255); border-radius: 8px; border: 1px solid rgb(203, 213, 225); color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin: 16px 0px; padding: 16px;">
+    <strong style="color: #1e40af; font-size: 15px;">位置二：替换 Cloudflare 优选域名池（文件第 461 ~ 463 行左右）</strong>
+    <p style="color: #475569; font-size: 14px; margin: 6px 0px;">
+      找到定义 <code>EDGE_HOSTS</code> 的代码段，这里是 edgetunnel 的入口优选地址池。将双引号内由逗号分隔的默认域名（如 <code>saas.072159.xyz:443,...</code>）替换为你在优选网站获取到的最新域名或 IP，<strong>每个地址后必须带上 <code>:443</code> 端口</strong>：
+    </p>
+    <pre style="background: rgb(30, 41, 59); border-radius: 6px; color: #f8fafc; font-family: monospace; font-size: 13px; line-height: 1.5; overflow-x: auto; padding: 12px;"># 原代码第 276-284 行左右：
+EDGE_HOSTS = [
+    h.strip()
+    for h in os.environ.get(
+        "EDGE_HOSTS",
+        "填入优选域名1:443,填入优选域名2:443,填入优选域名3:443",
+    ).split(",")
+    if h.strip()
+]</pre>
+  </div>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--位置三（必改）--></span>
+  <div style="background-color: #fff8f8; background: rgb(255, 248, 248); border-radius: 8px; border: 1px solid rgb(224, 36, 36); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; margin: 16px 0px; padding: 16px;">
+    <strong style="color: #c81e1e; font-size: 15px;">位置三：必须配置用户自己的 edgetunnel 节点信息（文件第 525 ~ 526 行左右，必做项）</strong>
+    <p style="color: #374151; font-size: 14px; margin: 6px 0px;">
+      <strong>特别注意：</strong>代码内预留的 <code>EDT_UUID</code> 和 <code>EDT_DOMAIN</code> 是演示参数。<strong>你必须替换为自己实际部署的 edgetunnel 节点域名和对应的 UUID 密钥</strong>，否则自动生成的 <code>sub.txt</code> 订阅链接将无法连接使用！
+    </p>
+    <p style="margin: 6px 0px;"><b><span style="color: #374151;">edgetunnel部署代码：</span><span style="color: red;">【<a href="https://raw.githubusercontent.com/cmliu/edgetunnel/refs/heads/main/_worker.js" target="_blank">点此跳转</a>】</span></b></p>
+    <pre style="background: rgb(30, 41, 59); border-radius: 6px; color: #f8fafc; font-family: monospace; font-size: 13px; line-height: 1.5; overflow-x: auto; padding: 12px;"># 原代码第 338-341 行左右：
+EDT_UUID = os.environ.get("EDT_UUID", "填入你自己edgetunnel的UUID")
+EDT_DOMAIN = os.environ.get("EDT_DOMAIN", "填入你自己edgetunnel绑定的节点域名")
+EDT_FINGERPRINT = os.environ.get("EDT_FINGERPRINT", "chrome")</pre>
+  </div>
+
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">三处关键参数修改核对无误后，滑动到页面最下方点击 <strong>Commit changes</strong> 保存提交。</p>
+
+  <span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif" style="color: #1e293b; font-size: 16px;"><!--第五步--></span>
+  <h2 style="border-bottom: 2px solid rgb(226, 232, 240); color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin-top: 36px; padding-bottom: 8px;">五、步骤五：启动构建并获取两大生成页面</h2>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">1. 手动运行 Actions 任务</h3>
+  <ol style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; padding-left: 22px;">
+    <li>点击仓库顶部的 <strong>Actions</strong> 选项卡。</li>
+    <li>在左侧 Workflows 列表点击 <strong><code>VPN Gate Node Check</code></strong>。</li>
+    <li>点击右侧的 <strong>Run workflow</strong> 按钮，弹出菜单中再次点击绿色的 <strong>Run workflow</strong> 触发运行。</li>
+    <li>等待 1-3 分钟，当工作流出现绿色对号 ✅ 标识，即表示节点检测和页面生成已经完成。</li>
+  </ol>
+
+  <h3 style="color: #1e40af; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 18px; margin-top: 20px;">2. 获取两大访问地址</h3>
+  <p style="color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">
+    工作流完成后，GitHub Pages 会自动发布生成两个访问页面（将下方链接中的 <code>&lt;username&gt;</code> 替换为你的 GitHub 用户名，<code>&lt;repository&gt;</code> 替换为你的仓库名称）：
+  </p>
+
+  <div style="background: rgb(255, 255, 255); border-radius: 8px; border: 1px solid rgb(203, 213, 225); box-shadow: rgba(0, 0, 0, 0.03) 0px 2px 4px; color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px; margin: 16px 0px; padding: 16px;">
+    <strong style="color: #0f172a; font-size: 15px;">🌐 页面一：节点前端展示与下载页面（GitHub Pages 网址）</strong>
+    <p style="color: #475569; font-size: 13px; margin: 6px 0px;">
+      用于直接在浏览器端实时查看经过测速的节点列表、延迟、带宽，并可直接下载 <code>.ovpn</code> 配置文件：
+    </p>
+    <div style="background: rgb(248, 250, 252); border-radius: 6px; border: 1px solid rgb(226, 232, 240); color: #2563eb; font-family: monospace; font-size: 14px; padding: 10px 14px; word-break: break-all;">
+      https://你的GitHub用户名.github.io/仓库名/
+    </div>
+  </div>
+
+  <div style="background: rgb(255, 255, 255); border-radius: 8px; border: 1px solid rgb(203, 213, 225); box-shadow: rgba(0, 0, 0, 0.03) 0px 2px 4px; margin: 16px 0px; padding: 16px;">
+    <strong style="color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 15px;">📋 页面二：复制内容并粘贴到 EDG 后台的专用网页</strong>
+    <p style="color: #475569; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 13px; margin: 6px 0px;">
+      打开此页面后，可直接全选复制页面中的节点配置文本，然后粘贴进 EDG 后台系统：
+    </p>
+    <div style="background: rgb(248, 250, 252); border-radius: 6px; border: 1px solid rgb(226, 232, 240); color: #2563eb; font-family: monospace; font-size: 14px; margin-bottom: 12px; padding: 10px 14px; word-break: break-all;">
+      https://你的GitHub用户名.github.io/仓库名/hosts.txt
+    </div>
+    <div style="background: rgb(248, 250, 252); border-radius: 6px; border: 1px solid rgb(226, 232, 240); color: #059669; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 14px; padding: 10px 14px; word-break: break-all;">
+      <strong style="color: #166534; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 16px;">🎉 部署完成：</strong>
+      <span style="color: #15803d;">后续系统会根据 <code>check.yml</code> 中的定时配置（每 30 分钟自动运行一次）持续抓取、测速并提交最新数据，两个前端网页也会自动无缝同步最新节点。</span>
+    </div><div style="background: rgb(248, 250, 252); border-radius: 6px; border: 1px solid rgb(226, 232, 240); padding: 10px 14px; word-break: break-all;"><span face="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif"><b><span style="font-size: medium;">Github仓库地址</span><span style="font-size: 14px;">：</span></b></span><span style="background-color: white; font-size: 14px;"><span face="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"><b><a href="https://github.com/hezhanleiok/gate">https://github.com/hezhanleiok/gate</a></b></span></span></div>
+  </div>
+
+</div></div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全网首发】2026永久免费VPS！手把手教你白嫖AWS亚马逊原生IP，纯净度极高，秒开ChatGPT与4K视频！ · 晓鹤的博客</title>
+<meta name="description" content=" 
+
+            注册网址 
+       点此跳转     
+
+   1. 创建文件：Dockerfile 
+    
+FROM alpine:latest
+RUN apk add --no-cache wget tar
+WO">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">全网首发】2026永久免费VPS！手把手教你白嫖AWS亚马逊原生IP，纯净度极高，秒开ChatGPT与4K视频！</h1>
+  <div class="meta"><time>2026-04-13</time></div>
+  <div class="content"><div style="font-family: Arial, sans-serif; line-height: 1.6; margin: 20px 0px; max-width: 100%;">
+
+  <div class="separator" style="clear: both; text-align: center;"><a href="assets/img/fce1082039cb.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1536" data-original-width="2752" height="179" src="assets/img/fce1082039cb.png" width="320" /></a></div><br /><h2 style="border-bottom: 2px solid rgb(52, 152, 219); color: #2c3e50; padding-bottom: 8px;"><br /></h2><h2 style="border-bottom: 2px solid rgb(52, 152, 219); color: #2c3e50; padding-bottom: 8px;">注册网址</h2>
+  <p style="font-size: 16px;"><span style="color: #3498db;"><span style="text-decoration-color: initial; text-decoration-style: initial; text-decoration-thickness: initial;"><a href="https://www.back4app.com/#session-expired"><b>点此跳转</b></a></span></span></p>
+
+  <h2 style="border-bottom: 2px solid rgb(52, 152, 219); color: #2c3e50; margin-top: 30px; padding-bottom: 8px;">1. 创建文件：Dockerfile</h2>
+  <pre style="background-color: #f7f9fc; border-radius: 6px; border: 1px solid rgb(225, 228, 232); overflow-x: auto; padding: 15px;"><code style="color: #24292e; font-family: &quot;Courier New&quot;, monospace; font-size: 14px;">
+FROM alpine:latest
+RUN apk add --no-cache wget tar
+WORKDIR /app
+
+# 下载 sing-box 官方程序
+RUN wget https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-linux-amd64.tar.gz &amp;&amp; \
+    tar -zxvf sing-box-1.10.1-linux-amd64.tar.gz &amp;&amp; \
+    mv sing-box-1.10.1-linux-amd64/sing-box . &amp;&amp; \
+    rm -rf sing-box-1.10.1-linux-amd64*
+
+COPY config.json .
+EXPOSE 8080
+CMD ["./sing-box", "run", "-c", "config.json"]
+  </code></pre>
+
+  <h2 style="border-bottom: 2px solid rgb(52, 152, 219); color: #2c3e50; margin-top: 30px; padding-bottom: 8px;">2. 创建文件：config.json</h2>
+  <p style="color: #e74c3c; font-size: 16px; font-weight: bold;">请将 <code style="background: rgb(241, 241, 241); border-radius: 3px; padding: 2px 4px;">你的UUID</code> 替换为自己的UUID</p>
+  <pre style="background-color: #f7f9fc; border-radius: 6px; border: 1px solid rgb(225, 228, 232); overflow-x: auto; padding: 15px;"><code style="color: #24292e; font-family: &quot;Courier New&quot;, monospace; font-size: 14px;">
+{
+  "log": { "level": "info" },
+  "inbounds": [{
+    "type": "vless",
+    "tag": "vless-in",
+    "listen": "::",
+    "listen_port": 8080,
+    "users": [{ "uuid": "你的UUID" }],
+    "transport": { "type": "ws", "path": "/chat" }
+  }],
+  "outbounds": [{ "type": "direct", "tag": "direct" }]
+}
+  </code></pre>
+
+  <h3 style="color: #2c3e50; margin-top: 25px;">使用说明</h3>
+  <p style="font-size: 16px;">在 Github 仓库创建以上两个文件，把 config.json 里面的 UUID 换成自己的即可使用。</p><blockquote data-path-to-node="7"><p data-path-to-node="7,0"><code data-index-in-node="0" data-path-to-node="7,0">vless://你的UUID@你的域名:443?encryption=none&amp;security=tls&amp;type=ws&amp;host=你的域名&amp;path=%2fchat&amp;sni=你的域名#Back4App_项目名称</code></p></blockquote>
+
+</div></div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>

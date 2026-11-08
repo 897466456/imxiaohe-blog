@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>历时数月打磨！开源自研的 Windows 代理客户端 Aether：原生极速架构 + 五大模式切换！ · 晓鹤的博客</title>
+<meta name="description" content=" 
+
+   
+   
+     
+       
+     
+   
+
+   
+   
+     
+       🚀 Aether 深度评测：高性能原生级 Windows 代理与安全隧道客户端 
+     
+     
+       Aet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="alternate" type="application/rss+xml" title="晓鹤的博客" href="/rss.xml">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">晓鹤的博客</a>
+    <nav><a href="/">首页</a><a href="/pages/p/blog-page_89/">免责声明</a><a href="/pages/p/blog-page_15/">关于我</a><a href="/pages/p/blog-page/">隐私政策</a><a href="/rss.xml">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+<article class="post">
+  <h1 class="post-title">历时数月打磨！开源自研的 Windows 代理客户端 Aether：原生极速架构 + 五大模式切换！</h1>
+  <div class="meta"><time>2026-09-18</time><a class="tag" href="/tags/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/">技术教程</a></div>
+  <div class="content"><div style="color: #2d3748; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 15px; line-height: 1.85; margin: 0px auto; max-width: 100%;">
+
+  <!--顶部封面图（已移除黑色背景框，支持响应式自适应）-->
+  <div style="clear: both; margin-bottom: 24px; text-align: center;">
+    <a href="assets/img/47e5ad5e1c7a.jpg" style="display: block; text-decoration: none;">
+      <img alt="Aether Windows 代理客户端" border="0" data-original-height="1536" data-original-width="2752" src="assets/img/47e5ad5e1c7a.jpg" style="border-radius: 12px; box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 16px; display: inline-block; height: auto; max-width: 100%;" />
+    </a>
+  </div>
+
+  <!--介绍卡片-->
+  <div style="background: linear-gradient(135deg, rgb(15, 23, 42) 0%, rgb(30, 41, 59) 100%); border-radius: 12px; border: 1px solid rgb(51, 65, 85); box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 14px; color: #f8fafc; margin-bottom: 26px; padding: 28px 24px;">
+    <div style="margin-bottom: 14px; text-align: center;">
+      <span style="color: #60a5fa; font-size: 24px; font-weight: 700; line-height: 1.4;">🚀 Aether 深度评测：高性能原生级 Windows 代理与安全隧道客户端</span>
+    </div>
+    <p style="color: #cbd5e1; font-size: 15px; line-height: 1.75; margin: 0px;">
+      <strong>Aether</strong> 是一款专为 Windows 平台打造的高性能、轻量化网络代理与安全连接客户端。针对传统 Electron 客户端启动缓慢、动辄占用数百兆内存的问题，Aether 使用 Go 语言开发，基于 <strong>WebView2 与 Walk 混合原生 UI 架构</strong>，在保持现代化视觉与流畅交互的同时，提供了低系统开销、极速响应与工业级的系统流量接管能力。
+    </p>
+  </div>
+
+  <!--平台与环境支持-->
+  <div style="background-color: white; border-radius: 10px; border: 1px solid rgb(226, 232, 240); box-shadow: rgba(0, 0, 0, 0.02) 0px 2px 6px; margin-bottom: 24px; padding: 22px;">
+    <h3 style="align-items: center; border-bottom: 2px solid rgb(239, 246, 255); color: #1e3a8a; display: flex; font-size: 18px; margin-top: 0px; padding-bottom: 8px;">
+      💻 支持系统与运行环境
+    </h3>
+    <ul style="color: #4b5563; margin: 10px 0px 0px; padding-left: 20px;">
+      <li style="margin-bottom: 6px;"><strong>支持操作系统：</strong> Windows 10（1809 及以上版本）、Windows 11 以及 Windows Server 2019/2022。</li>
+      <li style="margin-bottom: 6px;"><strong>支持架构：</strong> 原生支持 x86-64 (AMD64) 与 ARM64 架构。</li>
+      <li style="margin-bottom: 6px;"><strong>系统运行时需求：</strong> 依赖系统内置的 <code>Microsoft Edge WebView2 Runtime</code>（Win11 自带，Win10 如未安装会提示自动拉取）。</li>
+      <li style="margin-bottom: 0px;"><strong>构建编译依赖：</strong> Go 1.20 或更高版本环境，PowerShell 5.1+。</li>
+    </ul>
+  </div>
+
+  <!--底层工作原理与架构解析-->
+  <div style="background-color: white; border-radius: 10px; border: 1px solid rgb(226, 232, 240); box-shadow: rgba(0, 0, 0, 0.02) 0px 2px 6px; margin-bottom: 24px; padding: 22px;">
+    <h3 style="border-bottom: 2px solid rgb(239, 246, 255); color: #1e3a8a; font-size: 18px; margin-top: 0px; padding-bottom: 8px;">
+      ⚙️ 底层技术原理与核心模块
+    </h3>
+    <p style="color: #4b5563; margin-bottom: 14px;">
+      Aether 内部采用模块化、低耦合的高并发管道架构，核心由以下关键子系统协同支撑：
+    </p>
+    
+    <div style="border-left: 4px solid rgb(59, 130, 246); margin-bottom: 12px; padding-left: 14px;">
+      <strong style="color: #1e40af;">1. 双引擎内核生命周期调度（Core Manager）</strong>
+      <p style="color: #64748b; font-size: 14px; margin: 4px 0px 0px;">
+        提供 <code>Process Backend</code>（独立守护进程）和 <code>Library Backend</code>（动态链接库集成）两种调度方式。负责底层路由协议引擎的动态拉起、热加载配置变更与非正常崩溃下的自愈重启。
+      </p>
+    </div>
+
+    <div style="border-left: 4px solid rgb(16, 185, 129); margin-bottom: 12px; padding-left: 14px;">
+      <strong style="color: #065f46;">2. 流量分流与注册表接管（Sysproxy &amp; Split）</strong>
+      <p style="color: #64748b; font-size: 14px; margin: 4px 0px 0px;">
+        通过 Windows API 和注册表操作实现系统代理的即时接管，支持本地 PAC（Proxy Auto-Config）服务与自定义分流引擎（Split Engine），可对 IP 网段、GeoIP 地理位置及域名规则进行毫秒级判定。
+      </p>
+    </div>
+
+    <div style="border-left: 4px solid rgb(245, 158, 11); margin-bottom: 12px; padding-left: 14px;">
+      <strong style="color: #92400e;">3. 熔断防护与后台健康卫士（Kill Switch &amp; Watchguard）</strong>
+      <p style="color: #64748b; font-size: 14px; margin: 4px 0px 0px;">
+        具备安全级别极高的 <code>Kill Switch</code> 熔断机制：当节点发生网络闪断或代理异常终止时，立即切断公网明文直连，防止真实 IP 和未加密 DNS 数据外泄；<code>Watchguard</code> 守护线程则以毫秒级频率实时汇总上下行吞吐与丢包率。
+      </p>
+    </div>
+
+    <div style="border-left: 4px solid rgb(139, 92, 246); margin-bottom: 0px; padding-left: 14px;">
+      <strong style="color: #5b21b6;">4. 极轻量双向通信桥接（WebBridge &amp; WebView2）</strong>
+      <p style="color: #64748b; font-size: 14px; margin: 4px 0px 0px;">
+        客户端的前端使用纯静态标准 HTML5/CSS3/ES6 编写，核心状态通过 <code>WebBridge</code> 与 Go 后端通过非阻塞 IPC 通道通信，规避传统网页框架对 Node.js/Chromium 的臃肿依赖。
+      </p>
+    </div>
+  </div>
+
+  <!--五种工作模式全景解析-->
+  <div style="background-color: white; border-radius: 10px; border: 1px solid rgb(226, 232, 240); box-shadow: rgba(0, 0, 0, 0.02) 0px 2px 6px; margin-bottom: 24px; padding: 22px;">
+    <h3 style="border-bottom: 2px solid rgb(239, 246, 255); color: #1e3a8a; font-size: 18px; margin-top: 0px; padding-bottom: 8px;">
+      🔄 支持的五种工作模式切换详解
+    </h3>
+    <p style="color: #4b5563; margin-bottom: 16px;">
+      为了适应不同办公、游戏、开发与日常浏览等场景，Aether 提供了灵活的五种路由模式，可在界面或托盘菜单中一键即时无缝切换：
+    </p>
+
+    <!--模式卡片容器-->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+      <!--模式 1-->
+      <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); padding: 14px 16px;">
+        <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <strong style="color: #1e293b; font-size: 15px;">1. 智能规则分流模式 (Rule / Routing)</strong>
+          <span style="background: rgb(224, 242, 254); border-radius: 4px; color: #0369a1; font-size: 11.5px; font-weight: bold; padding: 2px 8px;">日常推荐</span>
+        </div>
+        <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin: 0px;">
+          基于规则集自动分流。国内常见域名、局域网 IP 与大陆直连 IP 保持本地直连访问；受限或境外站点走加密代理节点，兼顾快速国内访问速度并节省节点流量。
+        </p>
+      </div>
+
+      <!--模式 2-->
+      <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); padding: 14px 16px;">
+        <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <strong style="color: #1e293b; font-size: 15px;">2. PAC 脚本代理模式 (PAC Mode)</strong>
+          <span style="background: rgb(254, 243, 199); border-radius: 4px; color: #b45309; font-size: 11.5px; font-weight: bold; padding: 2px 8px;">高兼容性</span>
+        </div>
+        <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin: 0px;">
+          向操作系统网络协议栈注入轻量级 PAC (Proxy Auto-Configuration) 自动配置脚本。适合企业环境或对系统代理机制有特殊限制的老旧浏览器与开发框架。
+        </p>
+      </div>
+
+      <!--模式 3-->
+      <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); padding: 14px 16px;">
+        <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <strong style="color: #1e293b; font-size: 15px;">3. 全局代理模式 (Global Proxy)</strong>
+          <span style="background: rgb(241, 245, 249); border-radius: 4px; color: #475569; font-size: 11.5px; font-weight: bold; padding: 2px 8px;">强制出境</span>
+        </div>
+        <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin: 0px;">
+          强制将本地所有系统代理接口的 HTTP 与 SOCKS 流量导向当前选定的代理服务器，不经过任何规则过滤。适合跨境测试、排错或者需要完全统一公网出口 IP 的特定业务。
+        </p>
+      </div>
+
+      <!--模式 4-->
+      <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); padding: 14px 16px;">
+        <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <strong style="color: #1e293b; font-size: 15px;">4. 虚拟网卡隧道模式 (VPN / TUN Mode)</strong>
+          <span style="background: rgb(237, 233, 254); border-radius: 4px; color: #6d28d9; font-size: 11.5px; font-weight: bold; padding: 2px 8px;">全流量穿透</span>
+        </div>
+        <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin: 0px;">
+          通过创建系统级虚拟网卡（TUN 适配器）接管整机全部网络流量。能直接捕获并代理无法设置系统代理的第三方客户端，如 Steam 游戏对局、Git 终端命令行、Docker 容器以及各类 SSH/远程工具。
+        </p>
+      </div>
+
+      <!--模式 5-->
+      <div style="background: rgb(248, 250, 252); border-radius: 8px; border: 1px solid rgb(226, 232, 240); padding: 14px 16px;">
+        <div style="align-items: center; display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <strong style="color: #1e293b; font-size: 15px;">5. 直连免代理模式 (Direct Mode)</strong>
+          <span style="background: rgb(220, 252, 231); border-radius: 4px; color: #15803d; font-size: 11.5px; font-weight: bold; padding: 2px 8px;">快速停用</span>
+        </div>
+        <p style="color: #64748b; font-size: 13.5px; line-height: 1.6; margin: 0px;">
+          完全绕过节点服务器，所有出网请求全部由本地网络直接发起。无需频繁退出客户端或清空节点，方便随时切回原生网络环境进行排障。
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!--使用说明与操作流程-->
+  <div style="background-color: white; border-radius: 10px; border: 1px solid rgb(226, 232, 240); box-shadow: rgba(0, 0, 0, 0.02) 0px 2px 6px; margin-bottom: 24px; padding: 22px;">
+    <h3 style="border-bottom: 2px solid rgb(239, 246, 255); color: #1e3a8a; font-size: 18px; margin-top: 0px; padding-bottom: 8px;">
+      📖 快速上手与操作指南
+    </h3>
+
+    <h4 style="color: #334155; font-size: 15px; margin: 16px 0px 8px;">第一步：克隆源码与编译构建</h4>
+    <p style="color: #4b5563; font-size: 14px; margin-bottom: 8px;">
+      Aether 项目仓库自带完整的自动化构建脚本 <code>build.ps1</code> 与核心安装工具[cite: 1]。以管理员权限打开 PowerShell，依次执行以下命令：
+    </p>
+    <div style="background: rgb(15, 23, 42); border-radius: 8px; color: #e2e8f0; font-family: Consolas, Monaco, &quot;Courier New&quot;, monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; padding: 12px 16px;">
+      <span style="color: #64748b;"># 克隆项目代码仓库</span><br />
+      git clone https://github.com/hezhanleiok/aether.git<br />
+      cd aether<br /><br />
+      <span style="color: #64748b;"># 执行自动化构建脚本</span><br />
+      powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1
+    </div>
+
+    <h4 style="color: #334155; font-size: 15px; margin: 20px 0px 8px;">第二步：导入与管理节点</h4>
+    <p style="color: #4b5563; font-size: 14px; margin-bottom: 8px;">
+      编译完成后运行可执行程序启动主界面：
+    </p>
+    <ol style="color: #4b5563; font-size: 14px; margin: 0px; padding-left: 20px;">
+      <li style="margin-bottom: 6px;">进入左侧侧边栏的<strong>「节点」</strong>管理页面。</li>
+      <li style="margin-bottom: 6px;">支持输入标准订阅 URL 进行一键更新与拉取，也支持直接从剪贴板粘贴节点配置。</li>
+      <li style="margin-bottom: 0px;">支持对当前列表进行<strong>批量延迟测速（Ping / Latency Check）</strong>，快速选出当前延迟最低的优质节点。</li>
+    </ol>
+
+    <h4 style="color: #334155; font-size: 15px; margin: 20px 0px 8px;">第三步：选择工作模式并启动</h4>
+    <ol style="color: #4b5563; font-size: 14px; margin: 0px; padding-left: 20px;">
+      <li style="margin-bottom: 6px;">在主界面上方的下拉菜单中，根据实际网络场景选择<strong>五种模式之一</strong>（普通办公与上网推荐“规则分流模式”）。</li>
+      <li style="margin-bottom: 6px;">点击醒目的<strong>“连接”</strong>主按钮，内核即刻启动并接管网络。</li>
+      <li style="margin-bottom: 0px;">主界面的实时数据看板将动态绘制上传、下载速率曲线以及流量统计。</li>
+    </ol>
+
+    <h4 style="color: #334155; font-size: 15px; margin: 20px 0px 8px;">第四步：系统托盘与高级设置</h4>
+    <p style="color: #4b5563; font-size: 14px; margin: 0px;">
+      点击主窗口关闭按钮时，程序会自动最小化至 Windows 系统任务栏托盘。右键点击托盘小图标即可快速进行<strong>节点切换、工作模式快速调整、开机自启开启以及完全退出</strong>，操作轻巧不打扰。
+    </p>
+  </div>
+
+  <!--总结与仓库入口-->
+  <div style="background: linear-gradient(135deg, rgb(240, 253, 244) 0%, rgb(232, 245, 233) 100%); border-radius: 10px; border: 1px solid rgb(187, 247, 208); margin-bottom: 24px; padding: 20px; text-align: center;">
+    <h4 style="color: #166534; font-size: 16px; margin: 0px 0px 8px;">💡 总结</h4>
+    <p style="color: #374151; font-size: 14px; margin: 0px auto 16px; max-width: 680px;">
+      Aether 在架构上抛弃了臃肿的打包方案，深度结合 Windows 系统的底层机制，集成了完善的内核调度、五大工作模式与安全熔断机制，是一款设计扎实、启动轻快的 Windows 代理与安全隧道工具。
+    </p>
+    <a href="https://github.com/hezhanleiok/aether" rel="noopener noreferrer" style="background-color: #2563eb; border-radius: 6px; box-shadow: rgba(37, 99, 235, 0.3) 0px 2px 5px; color: white; display: inline-block; font-size: 14px; font-weight: 600; padding: 10px 24px; text-decoration: none;" target="_blank">
+      ⭐ 访问 GitHub 项目仓库 (hezhanleiok/aether)
+    </a>
+  </div>
+
+</div></div>
+</article>
+<nav class="post-nav"><a href="/">← 返回首页</a></nav>
+</main>
+<footer class="site-footer">
+  <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/">GitHub</a></p></div>
+</footer>
+</body>
+</html>
