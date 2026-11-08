@@ -79,7 +79,7 @@ def localize(url):
                         dest = os.path.join(IMG_DIR, fn)
                 with open(dest, "wb") as f: f.write(data)
                 print(f"  img: {fn} ({len(data)//1024} KB)")
-            img_map[can] = f"assets/img/{fn}"
+            img_map[can] = f"/assets/img/{fn}"
         except Exception as ex:
             print(f"  img FAIL {can[:80]}... : {ex}")
             img_map[can] = url  # keep original remote url as fallback
@@ -134,7 +134,7 @@ PAGE = """<!DOCTYPE html>
 {body}
 </main>
 <footer class="site-footer">
-  <div class="wrap"><p>{site} · 由 Blogger 迁移 · <a href="https://github.com/">{gh}</a></p></div>
+  <div class="wrap"><p>{site} · 由 Blogger 迁移 · <a href="https://github.com/897466456/imxiaohe-blog">GitHub</a></p></div>
 </footer>
 </body>
 </html>"""
