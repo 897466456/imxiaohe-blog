@@ -17,7 +17,8 @@
 </header>
 <main class="wrap">
 <h1 class="page-title">标签：BPB</h1>
-<div class="post-list"><article class="post-card">
+<div class="post-list"><article class="post-card reveal">
+  
   <h2><a href="/posts/2025/11/vpnbpr30vpn/">永久免费节点新人小白必备，BPB面板4.0史诗级更新，有手就会，代理不求人</a></h2>
   <div class="meta"><time>2025-11-10</time><a class="tag" href="/tags/BPB/">BPB</a><a class="tag" href="/tags/VPN/">VPN</a></div>
   <p class="excerpt">                       github项目地址  ：      点击跳转         UUID在线工具:        https://1024tools.com/uuid     变量名称：        UUID      TR_PASS     kv      免费域名注册:       </p>
@@ -26,5 +27,26 @@
 <footer class="site-footer">
   <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/897466456/imxiaohe-blog">GitHub</a></p></div>
 </footer>
+<script>
+(function() {
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(function(e) { e.classList.add('visible'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) {
+      if (en.isIntersecting) {
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(function(e, i) {
+    e.style.transitionDelay = (i % 6) * 60 + 'ms';
+    io.observe(e);
+  });
+})();
+</script>
 </body>
 </html>

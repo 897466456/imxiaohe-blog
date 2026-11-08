@@ -136,15 +136,42 @@ PAGE = """<!DOCTYPE html>
 <footer class="site-footer">
   <div class="wrap"><p>{site} · 由 Blogger 迁移 · <a href="https://github.com/897466456/imxiaohe-blog">GitHub</a></p></div>
 </footer>
+<script>
+(function() {{
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {{
+    els.forEach(function(e) {{ e.classList.add('visible'); }});
+    return;
+  }}
+  var io = new IntersectionObserver(function(entries) {{
+    entries.forEach(function(en) {{
+      if (en.isIntersecting) {{
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+      }}
+    }});
+  }}, {{ threshold: 0.1 }});
+  els.forEach(function(e, i) {{
+    e.style.transitionDelay = (i % 6) * 60 + 'ms';
+    io.observe(e);
+  }});
+}})();
+</script>
 </body>
 </html>"""
 
 def render(title, body, desc="", nav_pages=""):
     return PAGE.format(title=title, desc=esc(desc), site=SITE_TITLE, nav_pages=nav_pages, body=body, gh="GitHub")
 
-def post_card(p):
+def post_card(p, featured=False):
     labels = "".join(f'<a class="tag" href="/tags/{esc(urllib.parse.quote(t))}/">{esc(t)}</a>' for t in p["labels"])
-    return f"""<article class="post-card">
+    cls = "post-card reveal" + (" featured" if featured else "")
+    img = ""
+    m = re.search(r'<img[^>]+src="(/assets/img/[^"]+)"', p["content"])
+    if m:
+        img = f'<img class="card-img" src="{esc(m.group(1))}" loading="lazy" alt="">'
+    return f"""<article class="{cls}">
+  {img}
   <h2><a href="/posts/{p['slug']}/">{esc(p['title'])}</a></h2>
   <div class="meta"><time>{fmt_date(p['published'])}</time>{labels}</div>
   <p class="excerpt">{esc(html.unescape(re.sub(r'<[^>]+>', ' ', p['content']))[:160])}</p>
@@ -152,6 +179,10 @@ def post_card(p):
 
 def main():
     posts_feed, pages_feed = get_feeds()
+    # copy stylesheet into public/assets/css/
+    css_dir = os.path.join(PUBLIC, "assets", "css")
+    os.makedirs(css_dir, exist_ok=True)
+    open(os.path.join(css_dir, "style.css"), "w", encoding="utf-8").write(CSS)
     posts = [entry_data(e) for e in posts_feed["feed"].get("entry", [])]
     pages = [entry_data(e) for e in pages_feed["feed"].get("entry", [])]
     posts.sort(key=lambda p: p["published"], reverse=True)
@@ -174,10 +205,12 @@ def main():
         chunk = posts[idx*per:(idx+1)*per]
         cards = "".join(post_card(p) for p in chunk)
         if idx == 0:
+            cards = "".join(post_card(p, featured=(i == 0)) for i, p in enumerate(chunk))
             body = f'<h1 class="page-title">最新文章</h1>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
             open(os.path.join(PUBLIC, "index.html"), "w", encoding="utf-8").write(render(f"{SITE_TITLE} · {SITE_SUBTITLE}", body, desc=SITE_SUBTITLE, nav_pages=nav_pages))
         else:
             d = os.path.join(PUBLIC, "page", str(idx+1)); os.makedirs(d, exist_ok=True)
+            cards = "".join(post_card(p) for p in chunk)
             body = f'<h1 class="page-title">最新文章</h1>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
             open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(render(f"第 {idx+1} 页 · {SITE_TITLE}", body, nav_pages=nav_pages))
 
