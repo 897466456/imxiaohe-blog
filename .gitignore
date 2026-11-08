@@ -6,3 +6,6 @@ _old_blog/
 node_modules/.wrangler/
 .wrangler/
 _verify_live.py
+_api_push.py
+_dl_skill.py
+_final_verify.py
