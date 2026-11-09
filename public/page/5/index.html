@@ -17,7 +17,7 @@
 </header>
 <main class="wrap">
 <h1 class="page-title">最新文章</h1>
-<p class="page-desc">第 5 页</p>
+<p class="page-intro">第 5 页</p>
 <div class="post-list"><article class="post-card reveal">
   
   <h2><a href="/posts/2025/11/cloudflareipv4ipv63/">免费域名托管Cloudflare域名合集IPV4和IPV6域名注册教程，目前可用，新人小白必备域名，3分钟快速注册！</a></h2>
@@ -76,26 +76,5 @@ L53免费域名： https://customer.l53.</p>
 <footer class="site-footer">
   <div class="wrap"><p>晓鹤的博客 · 由 Blogger 迁移 · <a href="https://github.com/897466456/imxiaohe-blog">GitHub</a></p></div>
 </footer>
-<script>
-(function() {
-  var els = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window)) {
-    els.forEach(function(e) { e.classList.add('visible'); });
-    return;
-  }
-  var io = new IntersectionObserver(function(entries) {
-    entries.forEach(function(en) {
-      if (en.isIntersecting) {
-        en.target.classList.add('visible');
-        io.unobserve(en.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  els.forEach(function(e, i) {
-    e.style.transitionDelay = (i % 6) * 60 + 'ms';
-    io.observe(e);
-  });
-})();
-</script>
 </body>
 </html>

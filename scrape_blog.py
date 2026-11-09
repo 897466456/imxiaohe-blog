@@ -136,27 +136,6 @@ PAGE = """<!DOCTYPE html>
 <footer class="site-footer">
   <div class="wrap"><p>{site} · 由 Blogger 迁移 · <a href="https://github.com/897466456/imxiaohe-blog">GitHub</a></p></div>
 </footer>
-<script>
-(function() {{
-  var els = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window)) {{
-    els.forEach(function(e) {{ e.classList.add('visible'); }});
-    return;
-  }}
-  var io = new IntersectionObserver(function(entries) {{
-    entries.forEach(function(en) {{
-      if (en.isIntersecting) {{
-        en.target.classList.add('visible');
-        io.unobserve(en.target);
-      }}
-    }});
-  }}, {{ threshold: 0.1 }});
-  els.forEach(function(e, i) {{
-    e.style.transitionDelay = (i % 6) * 60 + 'ms';
-    io.observe(e);
-  }});
-}})();
-</script>
 </body>
 </html>"""
 
@@ -203,15 +182,14 @@ def main():
     nidx = (n + per - 1) // per
     for idx in range(nidx):
         chunk = posts[idx*per:(idx+1)*per]
-        cards = "".join(post_card(p) for p in chunk)
         if idx == 0:
             cards = "".join(post_card(p) for p in chunk)
-            body = f'<h1 class="page-title">最新文章</h1>\n<p class="page-desc">{SITE_SUBTITLE}</p>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
+            body = f'<h1 class="page-title">最新文章</h1>\n<p class="page-intro">共 {n} 篇 · 长期更新</p>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
             open(os.path.join(PUBLIC, "index.html"), "w", encoding="utf-8").write(render(f"{SITE_TITLE} · {SITE_SUBTITLE}", body, desc=SITE_SUBTITLE, nav_pages=nav_pages))
         else:
             d = os.path.join(PUBLIC, "page", str(idx+1)); os.makedirs(d, exist_ok=True)
             cards = "".join(post_card(p) for p in chunk)
-            body = f'<h1 class="page-title">最新文章</h1>\n<p class="page-desc">第 {idx+1} 页</p>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
+            body = f'<h1 class="page-title">最新文章</h1>\n<p class="page-intro">第 {idx+1} 页</p>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
             open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(render(f"第 {idx+1} 页 · {SITE_TITLE}", body, nav_pages=nav_pages))
 
     # ---------- posts ----------
