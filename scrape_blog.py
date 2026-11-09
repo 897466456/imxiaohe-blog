@@ -43,7 +43,7 @@ def entry_data(e):
                 labels=labels, content=content, url=url)
 
 # ---------- image handling ----------
-IMG_RE = re.compile(r'https://blogger\.googleusercontent\.com/[^"\'\s)]+')
+IMG_RE = re.compile(r'https://blogger\.googleusercontent\.com/[^"\'\s&)]+')
 SIZE_RE = re.compile(r'/(?:w\d+(?:-h\d+)?(?:-p-k-no-nu)?|s\d+(?:-c)?|h\d+|w\d+-h\d+)(?=/)')
 
 def canonical_img(url):
