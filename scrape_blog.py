@@ -205,13 +205,13 @@ def main():
         chunk = posts[idx*per:(idx+1)*per]
         cards = "".join(post_card(p) for p in chunk)
         if idx == 0:
-            cards = "".join(post_card(p, featured=(i == 0)) for i, p in enumerate(chunk))
-            body = f'<h1 class="page-title">最新文章</h1>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
+            cards = "".join(post_card(p) for p in chunk)
+            body = f'<h1 class="page-title">最新文章</h1>\n<p class="page-desc">{SITE_SUBTITLE}</p>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
             open(os.path.join(PUBLIC, "index.html"), "w", encoding="utf-8").write(render(f"{SITE_TITLE} · {SITE_SUBTITLE}", body, desc=SITE_SUBTITLE, nav_pages=nav_pages))
         else:
             d = os.path.join(PUBLIC, "page", str(idx+1)); os.makedirs(d, exist_ok=True)
             cards = "".join(post_card(p) for p in chunk)
-            body = f'<h1 class="page-title">最新文章</h1>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
+            body = f'<h1 class="page-title">最新文章</h1>\n<p class="page-desc">第 {idx+1} 页</p>\n<div class="post-list">{cards}</div>\n' + pager(idx, nidx)
             open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(render(f"第 {idx+1} 页 · {SITE_TITLE}", body, nav_pages=nav_pages))
 
     # ---------- posts ----------
